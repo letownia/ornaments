@@ -20,14 +20,14 @@
             </div>
             <div class = "col-sm-6 formContainer">
                 <h3 class="header"> Add new item </h3>
-                <form id="uploadOrnament">
+                <form id="featureForm">
                     <p> <label> Address: </label> <label class="address"/> </p>
                     <p> <label> Description: </label> <input type="text" name="description"  required="required" /> </p>
                     <p> <label> Photo: </label> <input type="file" name="photo" onchange="previewFile()">
                         <img class="previewImage" src="" height="50" alt="Image preview...">
                     </p>
                     <input type="hidden" name="googlePlaceId" />
-                    <button type="button" onclick="submitOrnament()" ng-click="submitOrnament()">SUBMIT</button>
+                    <button type="button" onclick="submitFeature()" ng-click="submitsinethusfdsf()">SUBMIT</button>
                 </form>
             </div>
             <script>
@@ -51,10 +51,10 @@
                 var noPlaceSelected= "Please mark a valid address on the map";
                 $("label.address").text(noPlaceSelected);
                 var geocoder;
-                function submitOrnament(){
-                    var fd = new FormData($('#uploadOrnament')[0]);
+                function submitFeature(){
+                    var fd = new FormData($('#featureForm')[0]);
                     var method = "PUT";
-                    var url = "/ornament/"; // + $(".googlePlaceId").get(0).value;
+                    var url = "/feature/"; // + $(".googlePlaceId").get(0).value;
                     var request = {
                         url: url,
                         enctype: 'multipart/form-data',
@@ -126,7 +126,7 @@
                     gmap.data.toGeoJson(boobz);
                 }
             </script>
-            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfnWK4Eok5jsiT0nr7v_xNz3vfab99vGA&callback=initMap" async defer></script>
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-7iMFFPCNY0gidSz6K7WUJsrj5uaWnJI&callback=initMap" async defer></script>
         </div>
     </body>
 </html>

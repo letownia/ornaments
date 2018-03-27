@@ -1,4 +1,4 @@
-package com.lojasiewicz.ornaments.service.db;
+package com.lojasiewicz.mapDecorator.service.db;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

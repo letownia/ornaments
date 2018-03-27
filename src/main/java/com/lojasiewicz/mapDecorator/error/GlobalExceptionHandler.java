@@ -1,4 +1,4 @@
-package com.lojasiewicz.ornaments.error;
+package com.lojasiewicz.mapDecorator.error;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

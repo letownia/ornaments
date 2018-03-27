@@ -1,12 +1,12 @@
-package com.lojasiewicz.ornaments;
+package com.lojasiewicz.mapDecorator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OrnamentsApplication {
+public class MapDecoratorApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OrnamentsApplication.class, args);
+		SpringApplication.run(MapDecoratorApplication.class, args);
 	}
 }
