@@ -1,98 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <head>
         <title>Simple Map</title>
-        <meta name="viewport" content="initial-scale=1.0">
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/index.css">
-       <!-- <style>
-            /* Always set the map height explicitly to define the size of the div
-             * element that contains the map. */
-            #map {
-                height: 100%;
-            }
-            /* Optional: Makes the sample page fill the window. */
-            html, body {
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        </style> -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     </head>
     <body>
-        Main Page
-        <h3>Borg at work</h3>
-        <div class="MapContainer" style="height:500px; width: 500px;">
-            <div id="map"></div>
-        </div>
-        <div class="FormContainer">
-
-        </div>
-        <script>
-            var latlong = { lng: 19.937327, lat: 50.061769};
-            var randomJSON = {
-                "type": "Feature",
-                "properties": {
-                    "name": "HELL",
-                    "amenity": "EXGIRLFRIENDS HOUSE",
-                    "popupContent": "DANGER DANGER DANGER. DO NOT GO HERE!!",
-                    "marker-color": "#eb7912",
-                    "marker-size": "medium",
-                    "marker-symbol": "cemetery"
-                },
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [19.965785, 50.057146]
-                }
-            };
-            var gmap, marker1, currMarker;
-            var geocoder;
-            function boobz(geoJson){
-                console.log("added geoJson");
-            }
-            function initMap() {
-                gmap = new google.maps.Map(document.getElementById('map'), {
-                    center: latlong,
-                    zoom: 13
-                });
-                geocoder = new google.maps.Geocoder;
-                // marker1 = new google.maps.Marker({
-                //     position: latlong,
-                //     map: gmap
-                // });
-
-                google.maps.event.addListener(gmap, 'click', function(event) {
-                    if(currMarker != null){
-                        currMarker.setMap(null);
+        <h1>Borg at work</h1>
+        <div class="row">
+            <div class = "col-sm-6 mapContainer">
+                <div class="mapContainer" style="height:500px; width: 100%">
+                    <div id="map"></div>
+                </div>
+            </div>
+            <div class = "col-sm-6 formContainer">
+                <h3 class="header"> Add new item </h3>
+                <form id="uploadOrnament">
+                    <p> <label> Address: </label> <label class="address"/> </p>
+                    <p> <label> Description: </label> <input type="text" name="description"  required="required" /> </p>
+                    <p> <label> Photo: </label> <input type="file" name="photo" onchange="previewFile()">
+                        <img class="previewImage" src="" height="50" alt="Image preview...">
+                    </p>
+                    <input type="hidden" name="googlePlaceId" />
+                    <button type="button" onclick="submitOrnament()" ng-click="submitOrnament()">SUBMIT</button>
+                </form>
+            </div>
+            <script>
+                var latlong = { lng: 19.937327, lat: 50.061769};
+                var randomJSON = {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "HELL",
+                        "amenity": "EXGIRLFRIENDS HOUSE",
+                        "popupContent": "DANGER DANGER DANGER. DO NOT GO HERE!!",
+                        "marker-color": "#eb7912",
+                        "marker-size": "medium",
+                        "marker-symbol": "cemetery"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [19.965785, 50.057146]
                     }
-                    currMarker = new google.maps.Marker({
-                        position: event.latLng,
-                        map: gmap
+                };
+                var gmap, marker1, currMarker;
+                var noPlaceSelected= "Please mark a valid address on the map";
+                $("label.address").text(noPlaceSelected);
+                var geocoder;
+                function submitOrnament(){
+                    var fd = new FormData($('#uploadOrnament')[0]);
+                    var method = "PUT";
+                    var url = "/ornament/"; // + $(".googlePlaceId").get(0).value;
+                    var request = {
+                        url: url,
+                        enctype: 'multipart/form-data',
+                        type: method,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        cache: false,
+                        data: fd,
+                        beforeSend: function (xhr) {
+                        },
+                        error: function(jqXHR) {
+
+                            console.log("ajax error " + jqXHR.status);
+                        },
+                        success: function(jqXHR) {
+                            alert ("SUCCESSS BITCHES >>> WE NO be Failed " +  jqXHR.status);
+                        }
+                    };
+                    $.ajax(request);
+                }
+                function boobz(geoJson){
+                    console.log("added geoJson");
+                }
+                function previewFile() {
+                    var previewImage = document.querySelector('img.previewImage');
+                    var file    = document.querySelector('input[name="photo"]').files[0];
+                    var reader  = new FileReader();
+                    reader.addEventListener("load", function () {
+                        previewImage.src = reader.result;
+                    }, false);
+                    if (file) {
+                        reader.readAsDataURL(file);
+                    }
+                }
+
+                function initMap() {
+                    gmap = new google.maps.Map(document.getElementById('map'), {
+                        center: latlong,
+                        zoom: 13
                     });
-                    google.maps.event.addListener(currMarker, 'click', function() {
-                        //infowindow.open(gmap, marker);
-                        if (currMarker != null) {
+                    geocoder = new google.maps.Geocoder;
+                    // marker1 = new google.maps.Marker({
+                    //     position: latlong,
+                    //     map: gmap
+                    // });
+
+                    google.maps.event.addListener(gmap, 'click', function(event) {
+                        if(currMarker != null){
                             currMarker.setMap(null);
                         }
-                        geocoder.geocode({'location': event.latLng}, function(results,status){
-                                if(status==='OK'){
-                                    window.alert('your address = ' + results[0].formatted_address);
-                                }else{
-                                    window.alert('please select a valid address');
+                        currMarker = new google.maps.Marker({
+                            position: event.latLng,
+                            map: gmap
+                        });
+                        //google.maps.event.addListener(currMarker, 'click', function() {
+                            //infowindow.open(gmap, marker);
+
+                            geocoder.geocode({'location': event.latLng}, function(results,status){
+                                    var msg = (status==='OK')? results[0].formatted_address : noPlaceSelected;
+                                    console.log(results[0].types[0]+ ": " + results[0].formatted_address);
+                                    $('[name="googlePlaceId"]').get(0).value = results[0].place_id;
+                                    $('label.address').text(msg);
                                 }
-                            }
-                        );
+                            );
+                        //});
                     });
-                });
 
-                var res = gmap.data.addGeoJson(randomJSON);
-                gmap.data.toGeoJson(boobz);
-            }
-        </script>
-
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfnWK4Eok5jsiT0nr7v_xNz3vfab99vGA&callback=initMap"
-                async defer>
-        </script>
+                    var res = gmap.data.addGeoJson(randomJSON);
+                    gmap.data.toGeoJson(boobz);
+                }
+            </script>
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfnWK4Eok5jsiT0nr7v_xNz3vfab99vGA&callback=initMap" async defer></script>
+        </div>
     </body>
 </html>
