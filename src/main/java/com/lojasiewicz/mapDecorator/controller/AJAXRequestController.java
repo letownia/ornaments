@@ -1,11 +1,12 @@
 package com.lojasiewicz.mapDecorator.controller;
 
 import com.lojasiewicz.mapDecorator.service.MapDecoratorService;
-import com.lojasiewicz.mapDecorator.service.db.MapFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 public class AJAXRequestController {
@@ -34,6 +35,12 @@ public class AJAXRequestController {
                                                 @RequestParam("description") String description,
                                                 @RequestParam("googlePlaceId") String googlePlaceId){
         //ornamentsservice.insertmapfeature(newfeature);
+
+        try {
+            mapDecoratorService.insertMapFeature(description, googlePlaceId, multiPartFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return responseOK();
     }
 

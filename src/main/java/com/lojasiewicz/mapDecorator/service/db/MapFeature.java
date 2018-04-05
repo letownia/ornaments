@@ -1,22 +1,28 @@
 package com.lojasiewicz.mapDecorator.service.db;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class MapFeature {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY )
     private Long id;
-
     @NotNull
-    private BigDecimal lat;
-
+    private String description;
     @NotNull
-    private BigDecimal lng;
+    private String googlePlaceId;
+    @GeneratedValue
+    @Column(insertable = false, updatable = false)
+    private java.sql.Timestamp createTimestamp;
+    @GeneratedValue
+    @Column(insertable = false, updatable = false)
+    private java.sql.Timestamp modifyTimestamp;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="mapFeature")
+    private List<MapFeaturePhoto> photoList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -26,19 +32,47 @@ public class MapFeature {
         this.id = id;
     }
 
-    public BigDecimal getLat() {
-        return lat;
+
+    public String getDescription() {
+        return description;
     }
 
-    public void setLat(BigDecimal lat) {
-        this.lat = lat;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public BigDecimal getLng() {
-        return lng;
+
+    public String getGooglePlaceId() {
+        return googlePlaceId;
     }
 
-    public void setLng(BigDecimal lng) {
-        this.lng = lng;
+    public void setGooglePlaceId(String googlePlaceId) {
+        this.googlePlaceId = googlePlaceId;
+    }
+
+
+    public java.sql.Timestamp getCreateTimestamp() {
+        return createTimestamp;
+    }
+
+    public void setCreateTimestamp(java.sql.Timestamp createTimestamp) {
+        this.createTimestamp = createTimestamp;
+    }
+
+
+    public java.sql.Timestamp getModifyTimestamp() {
+        return modifyTimestamp;
+    }
+
+    public void setModifyTimestamp(java.sql.Timestamp modifyTimestamp) {
+        this.modifyTimestamp = modifyTimestamp;
+    }
+
+    public List<MapFeaturePhoto> getPhotoList() {
+        return photoList;
+    }
+
+    public void setPhotoList(List<MapFeaturePhoto> photoList) {
+        this.photoList = photoList;
     }
 }
