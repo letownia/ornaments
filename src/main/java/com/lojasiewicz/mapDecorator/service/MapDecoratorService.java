@@ -1,11 +1,13 @@
 package com.lojasiewicz.mapDecorator.service;
 
-import com.lojasiewicz.mapDecorator.service.db.*;
+import com.lojasiewicz.mapDecorator.service.db.MapFeature;
+import com.lojasiewicz.mapDecorator.service.db.MapFeaturePhoto;
+import com.lojasiewicz.mapDecorator.service.db.MapFeatureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +17,21 @@ public class MapDecoratorService {
     @Autowired
     private MapFeatureRepository mapFeatureRepository;
 
-    public List<UserObject> getUserList(){
-        List<UserObject> users = new ArrayList<>();
-      //  userRepository.findAll().forEach(users::add);
-        return users;
+    public List<MapFeature> getAllFeatures(){
+        List<MapFeature> features = new ArrayList<>();
+        mapFeatureRepository.findAll().forEach(features::add);
+        return features;
     }
 
-    public void insertMapFeature(String description, String googlePlaceId, MultipartFile photo) throws IOException {
+    public void insertMapFeature(String description, String googlePlaceId, String blobName, String latitude,
+                                 String longitude) throws IOException {
         MapFeature newFeature = new MapFeature();
         newFeature.setDescription(description);
         newFeature.setGooglePlaceId(googlePlaceId);
+        newFeature.setLatitude(new BigDecimal(latitude));
+        newFeature.setLongitude(new BigDecimal(longitude));
         MapFeaturePhoto newPhoto = new MapFeaturePhoto();
-        newPhoto.setPhoto(photo.getBytes());
+        newPhoto.setBlobName(blobName);
         newPhoto.setMapFeature(newFeature);
         newFeature.getPhotoList().add(newPhoto);
         mapFeatureRepository.save(newFeature);
