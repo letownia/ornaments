@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -32,27 +31,17 @@ public class AJAXRequestController {
         //new Gson().toJson(users.stream().map(x->x.getUserName()).collect(Collectors.toList()));
     }
 
-//    @RequestMapping(method= RequestMethod.PUT,  value="/feature")
-//    public ResponseEntity<String> insertFeature(@RequestBody MapFeature newFeature){
-//        mapDecoratorService.insertMapFeature(newFeature);
-//        return responseOK();
-//    }
-//    @RequestMapping(method= RequestMethod.PUT,  value="/ornament/")
-//    public ResponseEntity<String> insertFeature(@RequestBody MultipartFile multiPartFile){krk_ornaments
-//        //ornamentsService.insertMapFeature(newFeature);
-//        return responseOK();
-//    }
-
-    @RequestMapping(method= RequestMethod.PUT,  value="/feature/")
-    public ResponseEntity<String> insertFeature(@RequestParam("photo") MultipartFile multiPartFile,
+    @RequestMapping(method= RequestMethod.PUT,  value="/feature", consumes = {"multipart/form-data"})
+    public ResponseEntity<String> insertFeature(
                                                 @RequestParam("description") String description,
                                                 @RequestParam("googlePlaceId") String googlePlaceId,
                                                 @RequestParam("latitude") String latitude,
-                                                @RequestParam("longitude") String longitude){
-        //ornamentsservice.insertmapfeature(newfeature);
+                                                @RequestParam("longitude") String longitude,
+                                                @RequestParam("imageDataURL") String imageDataURL
+                                                ){
         String blobName = "";
         try {
-            blobName = cloudStorageService.addBlob("/photos/largeSize/" + googlePlaceId, multiPartFile);
+            blobName = cloudStorageService.addBlob("/photos/largeSize/" + googlePlaceId, imageDataURL);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,13 +52,6 @@ public class AJAXRequestController {
         }
         return responseOK();
     }
-
-//    @RequestMapping(method= RequestMethod.PUT,  value="/ornament/{googlePlaceId}")
-//    public ResponseEntity<String> insertFeature(@RequestBody MultipartFile multiPartFile,
-//                                                @PathVariable("googlePlaceId") String googlePlaceId){
-//        //ornamentsService.insertMapFeature(newFeature);
-//        return responseOK();
-//    }
 
     private static ResponseEntity<String> responseOK() {
         return ResponseEntity.ok(null);

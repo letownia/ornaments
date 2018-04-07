@@ -21,12 +21,12 @@
             </div>
             <div class = "col-sm-6 formContainer">
                 <h3 class="header"> Add new item </h3>
+                <p><label> Photo: </label> <input type="file" name="photo" accept="image/*" onchange="processImage()">
+                    <img class="previewImage" src="" height="50" alt="Image preview...">
+                </p>
                 <form id="featureForm">
                     <p> <label> Address: </label> <label class="address"/> </p>
                     <p> <label> Description: </label> <input type="text" name="description"  required="required" /> </p>
-                    <p> <label> Photo: </label> <input type="file" name="photo" onchange="previewFile()">
-                        <img class="previewImage" src="" height="50" alt="Image preview...">
-                    </p>
                     <input type="hidden" name="googlePlaceId" />
                     <input type="hidden" name="latitude"/>
                     <input type="hidden" name="longitude"/>
@@ -34,18 +34,56 @@
                 </form>
             </div>
             <script>
-                var latlong = { lng: 19.937327, lat: 50.061769};
-
+                var centerOfKrakow = { lng: 19.937327, lat: 50.061769};
                 var gmap, currMarker, placesService;
-                var addressoText = "Go Fuck Yourself";
+                var addressoText = "";
                 var addressoWindow;
+                var imageDataURL;
                 var noPlaceSelected= "Please mark a valid address on the map";
                 $("label.address").text(noPlaceSelected);
                 var geocoder;
+
+                function processImage(){
+                    var previewImage = document.querySelector('img.previewImage');
+                    var file = document.querySelector('input[name="photo"]').files[0];
+                    // Create a file reader
+                    var reader = new FileReader();
+                    // Set the image once loaded into file reader
+                    reader.onload = function (readerEvent) {
+                        var image = new Image();
+                        image.onload = function (imageEvent) {
+                            var width = image.width,
+                                height = image.height,
+                                MAX_WIDTH = 640,
+                                MAX_HEIGHT = 480;
+                            console.log("w/h before resize = " + width + ", " + height);
+                            if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                            }
+                            if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                            }
+                            var canvas = document.createElement('canvas', width, height);
+                            var ctx = canvas.getContext("2d");
+                            ctx.drawImage(image, 0, 0, width, height);
+                            console.log("w/h after resize = " + width + ", " + height);
+                            console.log("------------");
+                            imageDataURL = canvas.toDataURL("image/png");
+                        }
+                        image.src = readerEvent.target.result;
+                        previewImage.src = readerEvent.target.result;
+                    }
+                    // Load files into file reader
+                    reader.readAsDataURL(file);
+                }
+
                 function submitFeature(){
                     var fd = new FormData($('#featureForm')[0]);
+                    fd.append("imageDataURL", imageDataURL);
                     var method = "PUT";
-                    var url = "/feature/"; // + $(".googlePlaceId").get(0).value;
+                    var url = "/feature"; // + $(".googlePlaceId").get(0).value;
                     var request = {
                         url: url,
                         enctype: 'multipart/form-data',
@@ -61,32 +99,19 @@
                             console.log("ajax error " + jqXHR.status);
                         },
                         success: function(jqXHR) {
-                            alert ("SUCCESSS BITCHES >>> WE NO be Failed " +  jqXHR.status);
+                            alert ("Hey sexy. Feature succesfully uploaded. To view the feature, please reload");
                         }
                     };
                     $.ajax(request);
                 }
-                function previewFile() {
-                    var previewImage = document.querySelector('img.previewImage');
-                    var file    = document.querySelector('input[name="photo"]').files[0];
-                    var reader  = new FileReader();
-                    reader.addEventListener("load", function () {
-                        previewImage.src = reader.result;
-                    }, false);
-                    if (file) {
-                        reader.readAsDataURL(file);
-                    }
-                }
+
 
                 function loadInitialFeatures(){
                     /*Assumes featuresJSONObject already downloaded*/
                     featuresJSONObject.forEach(addFeature);
                 }
                 function addFeature(feature){
-                    // placesService = new google.maps.places.PlacesService(map);
-                    // placesService.getDetails({placeId: feature.googlePlaceId}, function(placeResult, placesServiceStatus){
-                    //     latLng = placeResult.geometry.location;
-                    // });
+
                     var latLng = new google.maps.LatLng(Number(feature.latitude), Number(feature.longitude));
                     var newMarker = new google.maps.Marker({
                         position: latLng,
@@ -96,14 +121,16 @@
                     var contentString = '<div id="content infoBitch">'
                                         + '<p>' + feature.description + '</p>'
                                         + '<img src ="https://storage.googleapis.com/krk_ornaments/' + feature.photoList[0].blobName
-                                        + '" width = "80%" height="80%"/>'
+                                        + '" max-width = "100%" max-height="100%"/>'
                                         + '</div>';
 
                     var infowindow = new google.maps.InfoWindow({
                         content: contentString,
-                        maxWidth: 300
+                        maxWidth: 1000
                     });
-
+                    newMarker.addListener('click', function () {
+                        infowindow.open(gmap, newMarker);
+                    });
                     newMarker.addListener('mouseover', function () {
                         infowindow.open(gmap, newMarker);
                     });
@@ -114,16 +141,13 @@
 
                 function initMap() {
                     gmap = new google.maps.Map(document.getElementById('map'), {
-                        center: latlong,
+                        center: centerOfKrakow,
                         zoom: 13
                     });
                     loadInitialFeatures();
                    // placeService = new google.maps.places.PlacesService(gmap);
                     geocoder = new google.maps.Geocoder;
-                    // marker1 = new google.maps.Marker({
-                    //     position: latlong,
-                    //     map: gmap
-                    // });
+
                     addressoWindow = new google.maps.InfoWindow({
                         content: addressoText
                     });
@@ -136,26 +160,18 @@
                             map: gmap
                         });
 
-
-                        //google.maps.event.addListener(currMarker, 'click', function() {
-                            //infowindow.open(gmap, marker);
-
                         geocoder.geocode({'location': event.latLng}, function(results,status){
-                            var filteredResults = results.filter(x => x.types[0] === "street_address");
-                            if(status === 'OK' && filteredResults.length > 0) {
-                                var chosenResult = filteredResults[0];
-                                $('[name="googlePlaceId"]').get(0).value = chosenResult.place_id;
-                                $('[name="latitude"]').get(0).value = chosenResult.geometry.location.lat();
-                                $('[name="longitude"]').get(0).value = chosenResult.geometry.location.lng();
-                                $('label.address').text(chosenResult.formatted_address);
-                                addressoWindow.setContent(chosenResult.formatted_address);
-                            // });
-                            }else{
-                                $('label.address').text(noPlaceSelected);
-                            }
-                                //console.log(results[0].types);
-                                // console.log(results[0].geometry.location.lat() + ", " + results[0].geometry.location.lng() + " : "
-                                //     + results[0].place_id + " : " +  results[0].formatted_address);
+                                var filteredResults = results.filter(x => x.types[0] === "street_address");
+                                if(status === 'OK' && filteredResults.length > 0) {
+                                    var chosenResult = filteredResults[0];
+                                    $('[name="googlePlaceId"]').get(0).value = chosenResult.place_id;
+                                    $('[name="latitude"]').get(0).value = chosenResult.geometry.location.lat();
+                                    $('[name="longitude"]').get(0).value = chosenResult.geometry.location.lng();
+                                    $('label.address').text(chosenResult.formatted_address);
+                                    addressoWindow.setContent(chosenResult.formatted_address);
+                                }else{
+                                    $('label.address').text(noPlaceSelected);
+                                }
                             }
                         );
                         currMarker.addListener('mouseover', function(){
@@ -164,7 +180,6 @@
                         currMarker.addListener('mouseout', function(){
                             addressoWindow.close();
                         });
-                        //});
                     });
                 }
             </script>

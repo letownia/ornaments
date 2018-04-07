@@ -18,6 +18,8 @@ SELECT VERSION();
 
 delete FROM map_feature where id is not null;
 
+delete from map_feature where id > 53;
+delete from map_feature_photo where map_feature_id > 53;
 SELECT * FROM map_feature;
 SELECT * FROM map_feature_photo;
 
