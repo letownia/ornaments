@@ -17,7 +17,11 @@ public class MapFeaturePhoto implements Serializable {
 
   @NotNull
   @Expose
-  private String blobName;
+  private String mediumIdentifier;
+
+  @NotNull
+  @Expose
+  private String thumbnailIdentifier;
 
 //  @Lob @Basic(fetch = FetchType.LAZY) @NotNull
 //  @Column(length=16777215)
@@ -31,14 +35,6 @@ public class MapFeaturePhoto implements Serializable {
     this.id = id;
   }
 
-//  public byte[] getPhoto() {
-//    return photo;
-//  }
-//
-//  public void setPhoto(byte[] photo) {
-//    this.photo = photo;
-//  }
-
   public MapFeature getMapFeature() {
     return mapFeature;
   }
@@ -47,22 +43,20 @@ public class MapFeaturePhoto implements Serializable {
     this.mapFeature = mapFeature;
   }
 
-  public String getBlobName() {
-    return blobName;
+  public String getMediumIdentifier() {
+    return mediumIdentifier;
   }
 
-  public void setBlobName(String blobName) {
-    this.blobName = blobName;
+  public void setMediumIdentifier(String mediumIdentifier) {
+    this.mediumIdentifier = mediumIdentifier;
   }
 
+  public String getThumbnailIdentifier() {
+    return thumbnailIdentifier;
+  }
 
-//  public long getMapFeatureId() {
-//    return mapFeatureId;
-//  }
-//
-//  public void setMapFeatureId(long mapFeatureId) {
-//    this.mapFeatureId = mapFeatureId;
-//  }
-
+  public void setThumbnailIdentifier(String thumbnailIdentifier) {
+    this.thumbnailIdentifier = thumbnailIdentifier;
+  }
 
 }

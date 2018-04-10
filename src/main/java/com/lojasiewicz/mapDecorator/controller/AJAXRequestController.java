@@ -1,7 +1,7 @@
 package com.lojasiewicz.mapDecorator.controller;
 
 import com.google.gson.GsonBuilder;
-import com.lojasiewicz.mapDecorator.cloudstorage.CloudStorageService;
+import com.lojasiewicz.mapDecorator.cloudstorage.PhotoStorageService;
 import com.lojasiewicz.mapDecorator.service.MapDecoratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class AJAXRequestController {
     @Autowired
     private MapDecoratorService mapDecoratorService;
     @Autowired
-    private CloudStorageService cloudStorageService;
+    private PhotoStorageService photoStorageService;
 
     @RequestMapping(method= RequestMethod.GET, value="/featuresJSONObject")
     /**
@@ -39,17 +39,35 @@ public class AJAXRequestController {
                                                 @RequestParam("longitude") String longitude,
                                                 @RequestParam("imageDataURL") String imageDataURL
                                                 ){
-        String blobName = "";
+
+        String mediumPhotoName = "", thumbnailPhotoName = "";
+        long startTime,endTime, startTotal;
+        startTotal = System.nanoTime();
         try {
-            blobName = cloudStorageService.addBlob("/photos/largeSize/" + googlePlaceId, imageDataURL);
+            startTime = System.nanoTime();
+            byte[] photoBytes = PhotoStorageService.imagaDataURLtoBinary(imageDataURL);
+            endTime = System.nanoTime();
+            System.out.println("imagaDataURLtoBinary " + (endTime-startTime)/10000000.0);
+            startTime = System.nanoTime();
+            mediumPhotoName = photoStorageService.saveMedium("photos/medium/" + googlePlaceId, photoBytes);
+            endTime = System.nanoTime();
+            System.out.println("saveMedium " + (endTime - startTime) / 10000000.0);
+            startTime = System.nanoTime();
+            thumbnailPhotoName = photoStorageService.createAndSaveThumbnail("photos/thumbnail/" + googlePlaceId, photoBytes);
+            endTime = System.nanoTime();
+            System.out.println("createAndSaveThumbnail " + (endTime - startTime) / 10000000.0);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        startTime = System.nanoTime();
         try {
-            mapDecoratorService.insertMapFeature(description, googlePlaceId, blobName,latitude,longitude);
+            mapDecoratorService.insertMapFeature(description, googlePlaceId, mediumPhotoName, thumbnailPhotoName, latitude,longitude);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        endTime = System.nanoTime();
+        System.out.println("insertMapFeature " + (endTime - startTime) / 10000000.0);
+        System.out.println("Total time " + (endTime - startTotal) / 10000000.0);
         return responseOK();
     }
 

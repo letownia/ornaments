@@ -10,18 +10,24 @@ commit;
 CREATE TABLE map_feature_photo (
   id               INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
   map_feature_id INT NOT NULL,
-  photo MEDIUMBLOB,
+  mediumIdentifier MEDIUMBLOB,
   create_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (map_feature_id) REFERENCES map_feature(id)
 );
 SELECT VERSION();
 
-delete FROM map_feature where id is not null;
+delete from map_feature where id > 1;
+delete from map_feature_photo where map_feature_id > 1;
 
-delete from map_feature where id > 53;
-delete from map_feature_photo where map_feature_id > 53;
 SELECT * FROM map_feature;
 SELECT * FROM map_feature_photo;
+
+alter table map_feature_photo drop column photo;
+alter table map_feature_photo add thumbnail_identifier varchar(512);
+
+update map_feature_photo set thumbnail_identifier  = medium_identifier where id is not null;
+
+alter table map_feature_photo modify thumbnail_identifier varchar(512) not null;
 
 ALTER TABLE MAP_FEATURE_PHOTOS ADD COLUMN create_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 

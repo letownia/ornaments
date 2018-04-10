@@ -23,15 +23,16 @@ public class MapDecoratorService {
         return features;
     }
 
-    public void insertMapFeature(String description, String googlePlaceId, String blobName, String latitude,
-                                 String longitude) throws IOException {
+    public void insertMapFeature(String description, String googlePlaceId, String mediumIdentifier, String thumbnailIdentifier,
+                                 String latitude, String longitude) throws IOException {
         MapFeature newFeature = new MapFeature();
         newFeature.setDescription(description);
         newFeature.setGooglePlaceId(googlePlaceId);
         newFeature.setLatitude(new BigDecimal(latitude));
         newFeature.setLongitude(new BigDecimal(longitude));
         MapFeaturePhoto newPhoto = new MapFeaturePhoto();
-        newPhoto.setBlobName(blobName);
+        newPhoto.setMediumIdentifier(mediumIdentifier);
+        newPhoto.setThumbnailIdentifier(thumbnailIdentifier);
         newPhoto.setMapFeature(newFeature);
         newFeature.getPhotoList().add(newPhoto);
         mapFeatureRepository.save(newFeature);

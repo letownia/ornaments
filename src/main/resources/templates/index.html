@@ -1,21 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- Only used to stylize the file-input button -->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-filestyle/2.1.0/bootstrap-filestyle.min.js"></script>-->
     <script src="/featuresJSONObject"></script>
     <head>
         <title>Simple Map</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="/css/index.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     </head>
     <body>
-        <div class="container-fluid" >
-            <div class="row">
-                <h1 style="text-align:center">Głowa do góry! </h1>
+        <!-- See https://getbootstrap.com/docs/3.3/components/#navbar-brand-image for more navbar details.. -->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <h3 style="text-align:center" th:text="#{indexTitle}"></h3>
+                </div>
+                <div class="nav navbar-nav navbar-right">
+                    <select class="bootstrap-select languageSwitcher" onchange="changeLanguage()">
+                        <option th:each="locale : ${allSupportedLocales}" th:value="${locale.localeCode}" th:text="${locale.displayName}"
+                                th:selected="${currentSupportedLocale.equals(locale)}"> </option>
+                    </select>
+                </div>
             </div>
+        </nav>
+        <div class="container-fluid" >
             <div class="row">
                 <div class = "col-sm-6 mapContainer">
                     <div class="mapContainer" style="height:500px; width: 100%">
@@ -23,17 +36,20 @@
                     </div>
                 </div>
                 <div class = "col-sm-6 formContainer">
-                    <h3 class="header"> Add new item </h3>
-                    <p><label> Photo: </label> <input type="file" name="photo" accept="image/*" onchange="processImage()">
-                        <img class="previewImage" src="" height="50" alt="Image preview...">
-                    </p>
+                    <h3 class="header"> [[#{addNewFeature}]] </h3>
+
+                    <!--<p><label> Photo: </label>-->
+                        <button id="doInputButton"> [[#{doInputButtonText}]]</button>
+                        <input type="file" id="hiddenFileInput" name="photo" accept="image/*" onchange="processImage()" style="display:none">
+                        <img class="previewImage" src="" height="50" th-alt="${noPictureChosen}">
+                    <!--</p>-->
                     <form id="featureForm">
-                        <p> <label> Address: </label> <label class="address"/> </p>
-                        <p> <label> Description: </label> <input type="text" name="description"  required="required" /> </p>
+                        <p> <label th:text="#{addressLabel}"></label> <label class="address"/> </p>
+                        <p> <label th:text="#{descriptionLabel}">  </label> <input type="text" name="description"  required="required" /> </p>
                         <input type="hidden" name="googlePlaceId" />
                         <input type="hidden" name="latitude"/>
                         <input type="hidden" name="longitude"/>
-                        <button type="button" onclick="submitFeature()" ng-click="submitsinethusfdsf()">SUBMIT</button>
+                        <button type="button" onclick="submitFeature()" th:text="#{submitButton}">TextNotLoaded</button>
                     </form>
                 </div>
             </div>
@@ -41,12 +57,26 @@
         <script>
             var centerOfKrakow = { lng: 19.937327, lat: 50.061769};
             var gmap, currMarker, placesService;
+            var autoHideInfoWindow= true;
+            var imageQuality = .92; //browser default is .92
             var addressoText = "";
             var addressoWindow;
             var imageDataURL;
-            var noPlaceSelected= "Please mark a valid address on the map";
+            var noPlaceSelected= "[[#{chooseAddressInstructions}]]";
             $("label.address").text(noPlaceSelected);
+            $("#doInputButton").click(function () {
+                $("#hiddenFileInput").trigger('click');
+            });
             var geocoder;
+
+            $("select.languageSwitcher")[0].initial
+            function changeLanguage(){
+                var newLanguage = $("select.languageSwitcher")[0].value;
+                console.log("Language switched to " + newLanguage);
+                var currURL = new URL(window.location.href);
+                currURL.searchParams.set("lang", newLanguage);
+                window.location.href = currURL.href;
+            }
 
             function processImage(){
                 var previewImage = document.querySelector('img.previewImage');
@@ -57,25 +87,28 @@
                 reader.onload = function (readerEvent) {
                     var image = new Image();
                     image.onload = function (imageEvent) {
-                        var width = image.width,
-                            height = image.height,
-                            MAX_WIDTH = 640,
-                            MAX_HEIGHT = 480;
-                        console.log("w/h before resize = " + width + ", " + height);
-                        if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
+                        var new_width = image.width,
+                            new_height = image.height,
+                            MAX_WIDTH = 1024,
+                            MAX_HEIGHT = 768;
+                        console.log("w/h before resize = " + new_width + ", " + new_height);
+                        if (new_width > MAX_WIDTH) {
+                                new_height *= MAX_WIDTH / new_width;
+                                new_width = MAX_WIDTH;
                         }
-                        if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
+                        if (new_height > MAX_HEIGHT) {
+                                new_width *= MAX_HEIGHT / new_height;
+                                new_height = MAX_HEIGHT;
                         }
-                        var canvas = document.createElement('canvas', width, height);
+                        var canvas = document.createElement('canvas');
+                        //var canvas = document.querySelector('canvas.dupaCanvas');
+                        canvas.width = new_width;
+                        canvas.height = new_height;
                         var ctx = canvas.getContext("2d");
-                        ctx.drawImage(image, 0, 0, width, height);
-                        console.log("w/h after resize = " + width + ", " + height);
+                        ctx.drawImage(image, 0, 0, new_width, new_height);
+                        console.log("w/h after resize = " + new_width + ", " + new_height);
                         console.log("------------");
-                        imageDataURL = canvas.toDataURL("image/png");
+                        imageDataURL = canvas.toDataURL("image/jpeg", imageQuality);
                     }
                     image.src = readerEvent.target.result;
                     previewImage.src = readerEvent.target.result;
@@ -125,7 +158,7 @@
 
                 var contentString = '<div id="content infoBitch">'
                                     + '<p>' + feature.description + '</p>'
-                                    + '<img src ="https://storage.googleapis.com/krk_ornaments/' + feature.photoList[0].blobName
+                                    + '<img src ="https://storage.googleapis.com/krk_ornaments/' + feature.photoList[0].thumbnailIdentifier
                                     + '" max-width = "100%" max-height="100%"/>'
                                     + '</div>';
 
@@ -140,7 +173,9 @@
                     infowindow.open(gmap, newMarker);
                 });
                 newMarker.addListener('mouseout', function () {
-                    infowindow.close();
+                    if(autoHideInfoWindow) {
+                        infowindow.close();
+                    }
                 });
             }
 
