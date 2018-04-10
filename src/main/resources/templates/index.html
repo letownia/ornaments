@@ -11,48 +11,119 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/index.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     </head>
     <body>
-        <!-- See https://getbootstrap.com/docs/3.3/components/#navbar-brand-image for more navbar details.. -->
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <h3 style="text-align:center" th:text="#{indexTitle}"></h3>
-                </div>
-                <div class="nav navbar-nav navbar-right">
-                    <select class="bootstrap-select languageSwitcher" onchange="changeLanguage()">
-                        <option th:each="locale : ${allSupportedLocales}" th:value="${locale.localeCode}" th:text="${locale.displayName}"
-                                th:selected="${currentSupportedLocale.equals(locale)}"> </option>
-                    </select>
-                </div>
-            </div>
-        </nav>
+        <!-- See https://getbootstrap.com/docs/3.3/components/#navbar-brand-image for more navbar details.. style="display:none" -->
+        <div class="loadingCurtain" >
+            <img class="loadingImage" src="http://i.stack.imgur.com/pC1Tv.jpg" alt="" width="120" height="120">
+        </div>
+
         <div class="container-fluid" >
-            <div class="row">
-                <div class = "col-sm-6 mapContainer">
-                    <div class="mapContainer" style="height:500px; width: 100%">
-                        <div id="map"></div>
+
+            <!--<nav class="navbar nav-tabs navbar-expand navbar-dark bg-primary">-->
+                <!--<span class="navbar-brand" th:text="#{indexTitle}"></span>-->
+
+                <!--<ul class="navbar-nav mr-auto">-->
+                    <!--<li class="nav-item active">-->
+                        <!--<a class="nav-link" data-toggle="tab" data-target="#mapSuperContainer">Home</a>-->
+                    <!--</li>-->
+                    <!--<li class="nav-item">-->
+                        <!--<a class="nav-link" data-toggle="tab" data-target="#aboutSuperContainer">About</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+                <!--<div class="navbar-nav ml-auto">-->
+                    <!--<select class="bootstrap-select languageSwitcher "-->
+                            <!--onchange="changeLanguage()">-->
+                        <!--<option th:each="locale : ${allSupportedLocales}" th:value="${locale.localeCode}"-->
+                                <!--th:text="${locale.displayName}"-->
+                                <!--th:selected="${currentSupportedLocale.equals(locale)}"></option>-->
+                    <!--</select>-->
+                <!--</div>-->
+            <!--</nav>-->
+
+            <ul class="nav nav-pills">
+                <li class="nav-item"> <h3 th:text="#{indexTitle}" style="margin-right:50px"> </h3></li>
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" data-target="#mapSuperContainer">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" data-target="#aboutSuperContainer"> About</a>
+                </li>
+                <li class="nav-item  ml-auto">
+                    <select class="bootstrap-select languageSwitcher" onchange="changeLanguage()">
+                        <option th:each="locale : ${allSupportedLocales}" th:value="${locale.localeCode}"
+                        th:text="${locale.displayName}"
+                        th:selected="${currentSupportedLocale.equals(locale)}"></option>
+                    </select>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="mapSuperContainer">
+                    <div class="row">
+                    <!--<div class="tab-content col-sm-12">-->
+                        <!--<div class="tab-pane active col-sm-12" id="tab1">-->
+                            <!--<div class="mapSuperContainer tab-pane active">-->
+                                <!--<row>-->
+                                    <div class = "col-sm-6 mapContainer">
+                                        <div class="mapContainer" style="height:500px; width: 100%">
+                                            <div id="map"></div>
+                                        </div>
+                                    </div>
+                                    <div class = "col-sm-6 mapTabs">
+                                        <ul class="nav nav-tabs">
+                                            <li class="nav-item">
+                                                <!-- We could change HREF to data-target
+                                                    https://stackoverflow.com/questions/39724687/bootstrap-tabs-without-anchors/39725375
+                                                -->
+                                                <a class="nav-link active" data-toggle="tab" data-target="#featureDetails">Preview</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-toggle="tab" data-target="#addPhoto"> [[#{addNewFeature}]]</a>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div class="tab-pane active" id="featureDetails">
+                                                <div class="featureName"> Please Click a feature on the map </div>
+                                                <img class="mediumImage" src="" width="100%" th-alt="${noPictureChosen}" ></img>
+                                                <div class="featureDescription"></div>
+                                            </div>
+                                            <div class="tab-pane fade" id="addPhoto">
+                                                <button id="doInputButton" > [[#{doInputButtonText}]]</button>
+                                                <input type="file" id="hiddenFileInput" name="photo" accept="image/*"
+                                                       onchange="processImage()" style="display:none">
+                                                <img class="previewImage" src="" height="50" th-alt="${noPictureChosen}">
+                                                <form id="featureForm">
+                                                    <p><label th:text="#{addressLabel}"></label> <label class="address"/></p>
+                                                    <p><label th:text="#{nameLabel}"> </label>
+                                                        <input type="text" name="name" required="required"/>
+                                                    </p>
+                                                    <p><label th:text="#{descriptionLabel}"> </label>
+                                                        <input type="text" name="description" required="required"/></p>
+                                                    <input type="hidden" name="googlePlaceId"/>
+                                                    <input type="hidden" name="latitude"/>
+                                                    <input type="hidden" name="longitude"/>
+                                                    <button type="button" onclick="submitFeature()" th:text="#{submitButton}">
+                                                        TextNotLoaded
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                     </div>
                 </div>
-                <div class = "col-sm-6 formContainer">
-                    <h3 class="header"> [[#{addNewFeature}]] </h3>
-
-                    <!--<p><label> Photo: </label>-->
-                        <button id="doInputButton"> [[#{doInputButtonText}]]</button>
-                        <input type="file" id="hiddenFileInput" name="photo" accept="image/*" onchange="processImage()" style="display:none">
-                        <img class="previewImage" src="" height="50" th-alt="${noPictureChosen}">
-                    <!--</p>-->
-                    <form id="featureForm">
-                        <p> <label th:text="#{addressLabel}"></label> <label class="address"/> </p>
-                        <p> <label th:text="#{descriptionLabel}">  </label> <input type="text" name="description"  required="required" /> </p>
-                        <input type="hidden" name="googlePlaceId" />
-                        <input type="hidden" name="latitude"/>
-                        <input type="hidden" name="longitude"/>
-                        <button type="button" onclick="submitFeature()" th:text="#{submitButton}">TextNotLoaded</button>
-                    </form>
+                <div class="tab-pane" id="aboutSuperContainer">
+                    <div class="row">
+                        <span> BORG AT WORK</span>
+                    </div>
                 </div>
+                            <!--</row>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
+
         </div>
         <script>
             var centerOfKrakow = { lng: 19.937327, lat: 50.061769};
@@ -62,6 +133,7 @@
             var addressoText = "";
             var addressoWindow;
             var imageDataURL;
+            var baseURLForImages = 'https://storage.googleapis.com/krk_ornaments/';
             var noPlaceSelected= "[[#{chooseAddressInstructions}]]";
             $("label.address").text(noPlaceSelected);
             $("#doInputButton").click(function () {
@@ -117,6 +189,14 @@
                 reader.readAsDataURL(file);
             }
 
+            function toggleCurtain(show){
+                var curtain = $(".loadingCurtain").get(0);
+                if(show){
+                    curtain.style.display = "block";
+                }else{
+                    curtain.style.display = "none";
+                }
+            }
             function submitFeature(){
                 var fd = new FormData($('#featureForm')[0]);
                 fd.append("imageDataURL", imageDataURL);
@@ -131,12 +211,14 @@
                     cache: false,
                     data: fd,
                     beforeSend: function (xhr) {
+                        toggleCurtain(true);
                     },
                     error: function(jqXHR) {
-
+                        toggleCurtain(false);
                         console.log("ajax error " + jqXHR.status);
                     },
                     success: function(jqXHR) {
+                        toggleCurtain(false);
                         alert ("Hey sexy. Feature succesfully uploaded. To view the feature, please reload");
                     }
                 };
@@ -157,17 +239,22 @@
                 });
 
                 var contentString = '<div id="content infoBitch">'
-                                    + '<p>' + feature.description + '</p>'
-                                    + '<img src ="https://storage.googleapis.com/krk_ornaments/' + feature.photoList[0].thumbnailIdentifier
+                                    + '<p>' + feature.name + '</p>'
+                                    + '<img src ="' + baseURLForImages + feature.photoList[0].thumbnailIdentifier
                                     + '" max-width = "100%" max-height="100%"/>'
                                     + '</div>';
-
+                newMarker.mediumImageURL = baseURLForImages + feature.photoList[0].mediumIdentifier;
+                newMarker.featureName = feature.name;
+                newMarker.featureDescription = feature.description;
                 var infowindow = new google.maps.InfoWindow({
                     content: contentString,
                     maxWidth: 1000
                 });
                 newMarker.addListener('click', function () {
                     infowindow.open(gmap, newMarker);
+                    $('.mediumImage').get(0).src = newMarker.mediumImageURL;
+                    $('.featureName').get(0).innerText = newMarker.featureName;
+                    $('.featureDescription').get(0).innerText = newMarker.featureDescription;
                 });
                 newMarker.addListener('mouseover', function () {
                     infowindow.open(gmap, newMarker);
@@ -201,7 +288,9 @@
                     });
 
                     geocoder.geocode({'location': event.latLng}, function(results,status){
-                            var filteredResults = results.filter(x => x.types[0] === "street_address");
+                            var filteredResults = results.filter(function (x) {
+                                return x.types[0] === "street_address"
+                            });
                             if(status === 'OK' && filteredResults.length > 0) {
                                 var chosenResult = filteredResults[0];
                                 $('[name="googlePlaceId"]').get(0).value = chosenResult.place_id;

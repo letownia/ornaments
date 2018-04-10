@@ -21,6 +21,10 @@ public class MapFeature implements Serializable {
 
     @NotNull
     @Expose
+    private String name;
+
+    @NotNull
+    @Expose
     private String googlePlaceId;
 
     @NotNull
@@ -109,5 +113,13 @@ public class MapFeature implements Serializable {
 
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

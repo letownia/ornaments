@@ -33,6 +33,7 @@ public class AJAXRequestController {
 
     @RequestMapping(method= RequestMethod.PUT,  value="/feature", consumes = {"multipart/form-data"})
     public ResponseEntity<String> insertFeature(
+                                                @RequestParam("name") String name,
                                                 @RequestParam("description") String description,
                                                 @RequestParam("googlePlaceId") String googlePlaceId,
                                                 @RequestParam("latitude") String latitude,
@@ -61,7 +62,7 @@ public class AJAXRequestController {
         }
         startTime = System.nanoTime();
         try {
-            mapDecoratorService.insertMapFeature(description, googlePlaceId, mediumPhotoName, thumbnailPhotoName, latitude,longitude);
+            mapDecoratorService.insertMapFeature(name, description, googlePlaceId, latitude, longitude, thumbnailPhotoName, mediumPhotoName);
         } catch (IOException e) {
             e.printStackTrace();
         }

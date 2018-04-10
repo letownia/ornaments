@@ -23,9 +23,9 @@ public class MapDecoratorService {
         return features;
     }
 
-    public void insertMapFeature(String description, String googlePlaceId, String mediumIdentifier, String thumbnailIdentifier,
-                                 String latitude, String longitude) throws IOException {
+    public void insertMapFeature(String name, String description, String googlePlaceId, String latitude, String longitude, String thumbnailIdentifier, String mediumIdentifier) throws IOException {
         MapFeature newFeature = new MapFeature();
+        newFeature.setName(name);
         newFeature.setDescription(description);
         newFeature.setGooglePlaceId(googlePlaceId);
         newFeature.setLatitude(new BigDecimal(latitude));

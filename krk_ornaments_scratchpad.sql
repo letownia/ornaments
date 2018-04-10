@@ -7,6 +7,16 @@ CREATE TABLE map_feature (
 );
 commit;
 
+alter table map_feature add column name VARCHAR(512) after id;
+
+update map_feature set .map_feature.APPROVED=true where description in ('Fat pigeon','Swan');
+commit;
+
+update map_feature_photo set approved =  true where map_feature_id in (select id from map_feature where approved = true);
+
+commit;
+select * FROM map_feature;
+update map_feature set name = description where id is not null;
 CREATE TABLE map_feature_photo (
   id               INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
   map_feature_id INT NOT NULL,
@@ -16,8 +26,8 @@ CREATE TABLE map_feature_photo (
 );
 SELECT VERSION();
 
-delete from map_feature where id > 1;
-delete from map_feature_photo where map_feature_id > 1;
+delete from map_feature where approved = false;
+delete from map_feature_photo where approved = false;
 
 SELECT * FROM map_feature;
 SELECT * FROM map_feature_photo;
