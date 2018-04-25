@@ -26,8 +26,6 @@
               <!--href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">-->
         <link rel="stylesheet" href="/css/nice-select.css">
         <link rel="stylesheet" href="/bootstrap-select.css">
-        <link href="/krakowzoo.svg"/>
-        <link href="/frog.svg"/>
     </head>
     <body >
         <!-- See https://getbootstrap.com/docs/3.3/components/#navbar-brand-image for more navbar details.. style="display:none" -->
@@ -62,7 +60,7 @@
                                 <label class="checkbox-inline" ng-repeat="x in allCategories">
                                     <input class="categoryCheckbox" type="checkbox" value="{{x}}" checked="checked"
                                            onchange="hideShowCategories(this.value, this.checked)">
-                                    <img class="categoryImage" src="{{x}}.svg" width="30">
+                                    <img class="categoryImage" ng-src="{{x}}.svg" width="30">
                                 </label>
                             </div>
                             <div class="mapContainer" style="height:500px; width: 100%">
@@ -146,7 +144,6 @@
                     <div class="row">
                         <div class="col">
                             <div class="row about">
-                                <img src="/frog.svg"/>
                                 <br><br><br><br>
                                 <h4> Page is currently under development.  </h4>
                                 <!--<svg width="300" height="200">-->
@@ -172,7 +169,6 @@
         <script>
             var app = angular.module("myApp", []);
             app.controller("myCtrl", function ($scope) {
-                debugger;
                 $scope.allCategories = allCategories;
             });
 
@@ -226,7 +222,6 @@
 
             function changeLanguage(){
                 var newLanguage = $("select.languageSwitcher")[0].value;
-                console.log("Language switched to " + newLanguage);
                 var currURL = new URL(window.location.href);
                 currURL.searchParams.set("lang", newLanguage);
                 window.location.href = currURL.href;
@@ -245,7 +240,6 @@
                             new_height = image.height,
                             MAX_WIDTH = 1024,
                             MAX_HEIGHT = 768;
-                        console.log("w/h before resize = " + new_width + ", " + new_height);
                         if (new_width > MAX_WIDTH) {
                                 new_height *= MAX_WIDTH / new_width;
                                 new_width = MAX_WIDTH;
@@ -260,8 +254,6 @@
                         canvas.height = new_height;
                         var ctx = canvas.getContext("2d");
                         ctx.drawImage(image, 0, 0, new_width, new_height);
-                        console.log("w/h after resize = " + new_width + ", " + new_height);
-                        console.log("------------");
                         imageDataURL = canvas.toDataURL("image/jpeg", imageQuality);
                     }
                     image.src = readerEvent.target.result;
@@ -305,7 +297,7 @@
                     },
                     success: function(jqXHR) {
                         toggleCurtain(false);
-                        alert ("Hey sexy. Feature succesfully uploaded. To view the feature, please reload");
+                        alert ("Feature succesfully uploaded. To view the feature, please reload");
                     }
                 };
                 $.ajax(request);
