@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Entity
@@ -15,10 +16,12 @@ public class MapFeaturePhoto implements Serializable {
   @JoinColumn(name="map_feature_id")
   private  MapFeature mapFeature;
 
+  @Size(min = 1, max = 512)
   @NotNull
   @Expose
   private String mediumIdentifier;
 
+  @Size(min = 1, max = 512)
   @NotNull
   @Expose
   private String thumbnailIdentifier;

@@ -6,16 +6,20 @@ import com.lojasiewicz.mapDecorator.service.db.MapFeatureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class MapDecoratorService {
 
+    private final MapFeatureRepository mapFeatureRepository;
+
     @Autowired
-    private MapFeatureRepository mapFeatureRepository;
+    public MapDecoratorService(MapFeatureRepository mapFeatureRepository){
+        this.mapFeatureRepository = mapFeatureRepository;
+    }
 
     public List<MapFeature> getAllFeatures(){
         List<MapFeature> features = new ArrayList<>();
@@ -23,18 +27,11 @@ public class MapDecoratorService {
         return features;
     }
 
-    public void insertMapFeature(String name, String description, String googlePlaceId, String latitude, String longitude, String thumbnailIdentifier, String mediumIdentifier) throws IOException {
-        MapFeature newFeature = new MapFeature();
-        newFeature.setName(name);
-        newFeature.setDescription(description);
-        newFeature.setGooglePlaceId(googlePlaceId);
-        newFeature.setLatitude(new BigDecimal(latitude));
-        newFeature.setLongitude(new BigDecimal(longitude));
-        MapFeaturePhoto newPhoto = new MapFeaturePhoto();
-        newPhoto.setMediumIdentifier(mediumIdentifier);
-        newPhoto.setThumbnailIdentifier(thumbnailIdentifier);
-        newPhoto.setMapFeature(newFeature);
-        newFeature.getPhotoList().add(newPhoto);
+    /**
+     * newPhoto will be inserted with newFeature, but we pass it anyway inorder to validate it.
+     */
+    @SuppressWarnings("unused")
+    public void insertMapFeature(@Valid MapFeature newFeature, @Valid MapFeaturePhoto newPhoto) throws IOException {
         mapFeatureRepository.save(newFeature);
     }
 }

@@ -6,7 +6,6 @@ public enum SupportedLocale {
     pl("pl", "Polski"),
     en("en", "English");
 
-    public static final SupportedLocale[] allSupportedLocales = {pl, en};
     public static final SupportedLocale defaultLocale = en;
     private final String localeCode;
     private final String displayName;

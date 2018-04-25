@@ -31,10 +31,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <appengine.target.version>1.3.2</appengine.target.version>
-        <INSTANCE_CONNECTION_NAME>mapdecorator:europe-west3:map-decorator-db</INSTANCE_CONNECTION_NAME>
+       <!-- <INSTANCE_CONNECTION_NAME>mapdecorator:europe-west3:map-decorator-db</INSTANCE_CONNECTION_NAME>
         <user>root</user>
         <password>epodroznik</password>
-        <database>krk_ornaments</database>
+        <database>krk_ornaments</database>-->
         <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
     </properties>
 
@@ -64,6 +64,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring.boot.version}</version>
             <exclusions>
@@ -81,11 +86,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
@@ -157,11 +157,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <skipTests>true</skipTests>
-                        <forkCount>1</forkCount>
-                        <reuseForks>true</reuseForks>
-                        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                    <!-- WARNING - test will only work with forkCount==0. For some reason creating a fork fails,
+                        and no tests will pass otherwise. For more information search google with string :
+                        "Error occurred in starting fork, check output in log"
+-->
+                    <forkCount>0</forkCount>
+                    <argLine>-Xmx1024m </argLine>
                 </configuration>
+                <version>2.20.1</version>
             </plugin>
             <plugin>
                 <groupId>com.github.warmuuh</groupId>

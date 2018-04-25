@@ -32,8 +32,21 @@ delete from map_feature_photo where approved = false;
 SELECT * FROM map_feature;
 SELECT * FROM map_feature_photo;
 
-alter table map_feature_photo drop column photo;
-alter table map_feature_photo add thumbnail_identifier varchar(512);
+delete from map_feature where id =83;
+
+alter table map_feature_photo drop column category;
+alter table map_feature_photo MODIFY thumbnail_identifier varchar(64) NOT NULL;
+
+
+ALTER TABLE map_feature ADD COLUMN category enum('mythical', 'fish', 'birds', 'amphibians', 'mammals', 'reptiles', 'insects', 'arachnids');
+
+select * From map_feature;
+
+delete from map_feature where id in (88,89,91);
+
+update map_feature set category = 'fish' where id in (87);
+
+SELECT * FROM map_feature_photo;
 
 update map_feature_photo set thumbnail_identifier  = medium_identifier where id is not null;
 

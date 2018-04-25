@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,17 +13,36 @@ import java.util.List;
 @Entity
 public class MapFeature implements Serializable {
 
+    public enum Category{
+        mythical,
+        fish,
+        birds,
+        amphibians,
+        mammals,
+        reptiles,
+        insects,
+        arachnids
+    }
+
     @Id @GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY )
     private Long id;
 
-    @NotNull
+    @Size(max = 512)
     @Expose
     private String description;
 
     @NotNull
+    @Size(min = 1, max = 32)
     @Expose
     private String name;
 
+    @NotNull
+    @Size(max = 16)
+    @Enumerated(EnumType.STRING)
+    @Expose
+    private Category category;
+
+    @Size(min = 1, max = 512)
     @NotNull
     @Expose
     private String googlePlaceId;
@@ -122,4 +142,13 @@ public class MapFeature implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
 }

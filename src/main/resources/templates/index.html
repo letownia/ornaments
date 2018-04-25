@@ -1,46 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>-->
+    <script src="/jquery.nice-select.v2.js"></script>
     <!-- Only used to stylize the file-input button -->
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-filestyle/2.1.0/bootstrap-filestyle.min.js"></script>-->
     <script src="/featuresJSONObject"></script>
+    <script src="/allCategories"></script>
+    <script src="/bootstrap-select.js"></script>
     <head>
         <title>Simple Map</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/index.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <!--<link rel="stylesheet"-->
+              <!--href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">-->
+        <link rel="stylesheet" href="/css/nice-select.css">
+        <link rel="stylesheet" href="/bootstrap-select.css">
+        <link href="/krakowzoo.svg"/>
+        <link href="/frog.svg"/>
     </head>
-    <body>
+    <body >
         <!-- See https://getbootstrap.com/docs/3.3/components/#navbar-brand-image for more navbar details.. style="display:none" -->
         <div class="loadingCurtain" >
             <img class="loadingImage" src="http://i.stack.imgur.com/pC1Tv.jpg" alt="" width="120" height="120">
         </div>
 
-        <div class="container-fluid" >
-
-            <!--<nav class="navbar nav-tabs navbar-expand navbar-dark bg-primary">-->
-                <!--<span class="navbar-brand" th:text="#{indexTitle}"></span>-->
-
-                <!--<ul class="navbar-nav mr-auto">-->
-                    <!--<li class="nav-item active">-->
-                        <!--<a class="nav-link" data-toggle="tab" data-target="#mapSuperContainer">Home</a>-->
-                    <!--</li>-->
-                    <!--<li class="nav-item">-->
-                        <!--<a class="nav-link" data-toggle="tab" data-target="#aboutSuperContainer">About</a>-->
-                    <!--</li>-->
-                <!--</ul>-->
-                <!--<div class="navbar-nav ml-auto">-->
-                    <!--<select class="bootstrap-select languageSwitcher "-->
-                            <!--onchange="changeLanguage()">-->
-                        <!--<option th:each="locale : ${allSupportedLocales}" th:value="${locale.localeCode}"-->
-                                <!--th:text="${locale.displayName}"-->
-                                <!--th:selected="${currentSupportedLocale.equals(locale)}"></option>-->
-                    <!--</select>-->
-                <!--</div>-->
-            <!--</nav>-->
+        <div class="container-fluid">
 
             <ul class="nav nav-pills">
                 <li class="nav-item"> <h3 th:text="#{indexTitle}" style="margin-right:50px"> </h3></li>
@@ -62,86 +57,173 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="mapSuperContainer">
                     <div class="row">
-                    <!--<div class="tab-content col-sm-12">-->
-                        <!--<div class="tab-pane active col-sm-12" id="tab1">-->
-                            <!--<div class="mapSuperContainer tab-pane active">-->
-                                <!--<row>-->
-                                    <div class = "col-sm-6 mapContainer">
-                                        <div class="mapContainer" style="height:500px; width: 100%">
-                                            <div id="map"></div>
+                        <div class = "col-sm-6 mapSuperContainer">
+                            <div class="categoryCheckBox" ng-app="myApp" ng-controller="myCtrl">
+                                <label class="checkbox-inline" ng-repeat="x in allCategories">
+                                    <input class="categoryCheckbox" type="checkbox" value="{{x}}" checked="checked"
+                                           onchange="hideShowCategories(this.value, this.checked)">
+                                    <img class="categoryImage" src="{{x}}.svg" width="30">
+                                </label>
+                            </div>
+                            <div class="mapContainer" style="height:500px; width: 100%">
+                                <div id="map"></div>
+                            </div>
+                        </div>
+                        <div class = "col-sm-6 mapTabs">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <!-- We could change HREF to data-target
+                                        https://stackoverflow.com/questions/39724687/bootstrap-tabs-without-anchors/39725375
+                                    -->
+                                    <a class="nav-link active featureDetailsNav" data-toggle="tab" data-target="#featureDetails">Preview</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link addNewFeatureNav" data-toggle="tab" data-target="#addPhoto"> [[#{addNewFeature}]]</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="featureDetails">
+                                    <div class="featureName" th:text="#{featureDetailsPlaceHolder}"></div>
+                                    <img class="mediumImage" src="" width="100%" th-alt="${choosePhotoError}" ></img>
+                                    <div class="featureDescription"></div>
+                                </div>
+                                <div class="tab-pane fade" id="addPhoto">
+                                    <button id="choosePhoto"> [[#{choosePhotoText}]]</button>
+                                    <input type="file" id="hiddenFileInput" name="photo" accept="image/*"
+                                           onchange="processImage()" style="display:none">
+                                    <img class="previewImage" src="" height="50" th-alt="${choosePhotoError}">
+                                    <!--<form id="formBitch">-->
+
+                                        <!--<label th:text="#{nameLabel}"> </label>-->
+                                        <!--<input type="text" name="name" required="required" minlength="3"-->
+                                               <!--maxlength="20"/>-->
+                                        <!--<label th:text="#{nameLabel}"> </label>-->
+                                        <!--<input type="text" name="name" required="required" minlength="3"-->
+                                               <!--maxlength="20"/>-->
+                                    <!--</form>-->
+                                    <form id="featureForm">
+                                        <p>
+                                            <label th:text="#{addressLabel}"></label>
+                                                <label class="address"/>
+                                        </p>
+                                        <div class="selectHolder">
+                                            <label th:text="#{categoriesLabel}"></label>
+
+                                            <select class="niceSelect customNiceSelect" title="Select your category" onchange="categoryChanged()">
+                                                <option data-image="mythical.svg" data-category="mythical">[[#{categories.mythical}]]</option>
+                                                <option data-image="fish.svg" data-category="fish">[[#{categories.fish}]]</option>
+                                                <option data-image="birds.svg" data-category="birds">[[#{categories.birds}]]</option>
+                                                <option data-image="amphibians.svg" data-category="amphibians">[[#{categories.amphibians}]]</option>
+                                                <option data-image="mammals.svg" data-category="mammals">[[#{categories.mammals}]]</option>
+                                                <option data-image="reptiles.svg" data-category="reptiles">[[#{categories.reptiles}]]</option>
+                                                <option data-image="insects.svg" data-category="insects">[[#{categories.insects}]]</option>
+                                                <option data-image="arachnids.svg" data-category="arachnids">[[#{categories.arachnids}]]</option>
+                                            </select>
                                         </div>
-                                    </div>
-                                    <div class = "col-sm-6 mapTabs">
-                                        <ul class="nav nav-tabs">
-                                            <li class="nav-item">
-                                                <!-- We could change HREF to data-target
-                                                    https://stackoverflow.com/questions/39724687/bootstrap-tabs-without-anchors/39725375
-                                                -->
-                                                <a class="nav-link active" data-toggle="tab" data-target="#featureDetails">Preview</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" data-toggle="tab" data-target="#addPhoto"> [[#{addNewFeature}]]</a>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content">
-                                            <div class="tab-pane active" id="featureDetails">
-                                                <div class="featureName"> Please Click a feature on the map </div>
-                                                <img class="mediumImage" src="" width="100%" th-alt="${noPictureChosen}" ></img>
-                                                <div class="featureDescription"></div>
-                                            </div>
-                                            <div class="tab-pane fade" id="addPhoto">
-                                                <button id="doInputButton" > [[#{doInputButtonText}]]</button>
-                                                <input type="file" id="hiddenFileInput" name="photo" accept="image/*"
-                                                       onchange="processImage()" style="display:none">
-                                                <img class="previewImage" src="" height="50" th-alt="${noPictureChosen}">
-                                                <form id="featureForm">
-                                                    <p><label th:text="#{addressLabel}"></label> <label class="address"/></p>
-                                                    <p><label th:text="#{nameLabel}"> </label>
-                                                        <input type="text" name="name" required="required"/>
-                                                    </p>
-                                                    <p><label th:text="#{descriptionLabel}"> </label>
-                                                        <input type="text" name="description" required="required"/></p>
-                                                    <input type="hidden" name="googlePlaceId"/>
-                                                    <input type="hidden" name="latitude"/>
-                                                    <input type="hidden" name="longitude"/>
-                                                    <button type="button" onclick="submitFeature()" th:text="#{submitButton}">
-                                                        TextNotLoaded
-                                                    </button>
-                                                </form>
-                                            </div>
+
+                                        <div class="nameHolder">
+                                            <label th:text="#{nameLabel}"> </label>
+                                                <input type="text" name="name" required="required" minlength="3"
+                                                       maxlength="20"/>
                                         </div>
-                                    </div>
+                                        <div class="descriptionHolder">
+                                            <label th:text="#{descriptionLabel}"> </label>
+                                            <input type="text" name="description" required="required"/>
+                                        </div>
+                                        <button type="button" onclick="submitFeature()" th:text="#{submitButton}">
+                                            TextNotLoaded
+                                        </button>
+                                        <input type="hidden" name="googlePlaceId"/>
+                                        <input type="hidden" name="latitude"/>
+                                        <input type="hidden" name="longitude"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane" id="aboutSuperContainer">
                     <div class="row">
-                        <span> BORG AT WORK</span>
+                        <div class="col">
+                            <div class="row about">
+                                <img src="/frog.svg"/>
+                                <br><br><br><br>
+                                <h4> Page is currently under development.  </h4>
+                                <!--<svg width="300" height="200">-->
+                                    <!--<rect width="100%" height="100%" fill="green"/>-->
+                                <!--</svg>-->
+
+                            </div>
+                            <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img
+                                    alt="Creative Commons License" style="border-width:0"
+                                    src="https://i.creativecommons.org/l/by/3.0/88x31.png"/></a><br/>This work is
+                            licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative
+                            Commons Attribution 3.0 Unported License</a>
+                            <!--<div class="row">Icons made by <a href="https://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel-->
+                                <!--Buddha</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed-->
+                                <!--by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"-->
+                                        <!--target="_blank">CC 3.0 BY</a></div>-->
+                        </div>
                     </div>
                 </div>
-                            <!--</row>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
             </div>
 
         </div>
         <script>
+            var app = angular.module("myApp", []);
+            app.controller("myCtrl", function ($scope) {
+                debugger;
+                $scope.allCategories = allCategories;
+            });
+
+            $(document).ready(function () {
+                $('.niceSelect').niceSelect();
+            });
+
             var centerOfKrakow = { lng: 19.937327, lat: 50.061769};
             var gmap, currMarker, placesService;
             var autoHideInfoWindow= true;
             var imageQuality = .92; //browser default is .92
-            var addressoText = "";
             var addressoWindow;
             var imageDataURL;
-            var baseURLForImages = 'https://storage.googleapis.com/krk_ornaments/';
-            var noPlaceSelected= "[[#{chooseAddressInstructions}]]";
-            $("label.address").text(noPlaceSelected);
-            $("#doInputButton").click(function () {
+            var bucketName = '[[${@environment.getProperty("com.lojasiewicz.mapDecorator.bucketName")}]]';
+            var baseURLForImages = 'https://storage.googleapis.com/' + bucketName + '/';
+            var noPlaceSelected= "[[#{addressError}]]";
+            var currCategory ;
+            setCustomValidationMessages();
+
+            $("#choosePhoto").click(function () {
                 $("#hiddenFileInput").trigger('click');
             });
             var geocoder;
+            function hideShowCategories(value, checked){
+                var selector = ".mapContainer img[src='/" + value + ".svg']";
+                if(checked){
+                    $(selector).show();
+                }else{
+                    $(selector).hide();
+                }
+            }
+            function categoryChanged() {
+                var x = $(".nice-select>.current>img").get(0);
+                var imageString = x.getAttribute("src");
+                currCategory = imageString.split(".")[0];
+            }
+            //$("select.languageSwitcher")[0].initial
+            function setCustomValidationMessages(){
+                // var name = document.querySelector('input[name="name"]');
+                // var description = document.querySelector('input[name="description"]');
+                // var choosePhoto = document.querySelector('button#choosePhoto');
+                // var address = document.querySelector('label.address');
 
-            $("select.languageSwitcher")[0].initial
+
+                // address.customValidity = '[[#{addressError}]]';
+                // name.setCustomValidity('[[#{nameError(${@environment.getProperty("nameMinLength")},${@environment.getProperty("nameMaxLength")})}]]');
+                // description.setCustomValidity('[[#{descriptionError(${@environment.getProperty("descriptionMaxLength")})}]]');
+                // choosePhoto.setCustomValidity('[[#{choosePhotoError}]]');
+                $("label.address").text(noPlaceSelected);
+            }
+
             function changeLanguage(){
                 var newLanguage = $("select.languageSwitcher")[0].value;
                 console.log("Language switched to " + newLanguage);
@@ -198,8 +280,12 @@
                 }
             }
             function submitFeature(){
-                var fd = new FormData($('#featureForm')[0]);
-                fd.append("imageDataURL", imageDataURL);
+                var htmlForm = $('#featureForm')[0];
+                if( ! htmlForm.reportValidity()){
+                    return;
+                }
+                var tempForm = new FormData(htmlForm);
+                tempForm.append("imageDataURL", imageDataURL);
                 var method = "PUT";
                 var url = "/feature"; // + $(".googlePlaceId").get(0).value;
                 var request = {
@@ -209,7 +295,7 @@
                     processData: false,  // tell jQuery not to process the data
                     contentType: false,  // tell jQuery not to set contentType
                     cache: false,
-                    data: fd,
+                    data: tempForm,
                     beforeSend: function (xhr) {
                         toggleCurtain(true);
                     },
@@ -231,10 +317,20 @@
                 featuresJSONObject.forEach(addFeature);
             }
             function addFeature(feature){
+                var categoryImage = {
+                    url: '/' + feature.category + ".svg",
+                    // This marker is 20 pixels wide by 32 pixels high.
+                    scaledSize: new google.maps.Size(32, 32),
+                    // The origin for this image is (0, 0).
+                    origin: new google.maps.Point(0, 0),
+                    // The anchor for this image is the base of the flagpole at (0, 32).
+                    // anchor: new google.maps.Point(0, 32)
+                };
 
                 var latLng = new google.maps.LatLng(Number(feature.latitude), Number(feature.longitude));
                 var newMarker = new google.maps.Marker({
                     position: latLng,
+                    icon: categoryImage,
                     map: gmap
                 });
 
@@ -255,6 +351,7 @@
                     $('.mediumImage').get(0).src = newMarker.mediumImageURL;
                     $('.featureName').get(0).innerText = newMarker.featureName;
                     $('.featureDescription').get(0).innerText = newMarker.featureDescription;
+                    $("a.featureDetailsNav").click();
                 });
                 newMarker.addListener('mouseover', function () {
                     infowindow.open(gmap, newMarker);
@@ -276,7 +373,7 @@
                 geocoder = new google.maps.Geocoder;
 
                 addressoWindow = new google.maps.InfoWindow({
-                    content: addressoText
+                    content: ""
                 });
                 google.maps.event.addListener(gmap, 'click', function(event) {
                     if(currMarker != null){

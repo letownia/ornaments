@@ -7,6 +7,51 @@ html, body {
   margin: 0px;
   padding: 0px;
 }
+#featureForm {
+  p{
+    margin-bottom: 0px;
+  }
+  div.nice-select.niceSelect.customNiceSelect {
+    float: none;
+    display: inline-block;
+    img {
+      margin-right: 5px;
+    }
+  }
+}
+
+.tinyImage {
+    width: 20px;
+    height: 20px;
+}
+.filter-option {
+  img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.selectpicker{
+  img{
+    width:30px;
+    height:30px;
+  }
+}
+.bootstrap-select{
+  .img {
+    width: 30px;
+    height: 30px;
+  }
+}
+.dropdownImage{
+  width: 30px;
+  height: 30px;
+}
+.niceSelect {
+  option{
+    width:10px;
+  }
+}
 a[data-target]{
   cursor: pointer;
 }

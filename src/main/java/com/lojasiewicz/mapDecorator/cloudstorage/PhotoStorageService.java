@@ -6,8 +6,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.StorageOptions;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -21,9 +20,8 @@ import java.io.IOException;
 @Service
 public class PhotoStorageService implements InitializingBean {
 
-    @Autowired
-    private Environment env;
-    private static final String bucketNameProperty = "com.lojasiewicz.mapDecorator.bucketName";
+    @Value("${com.lojasiewicz.mapDecorator.bucketName}")
+    private String bucketName;
 
     public static final int THUMBNAIL_MAX_WIDTH = 160;
     public static final int THUMBNAIL_MAX_HEIGHT = 120;
@@ -35,7 +33,7 @@ public class PhotoStorageService implements InitializingBean {
     private Storage googleCloudStorage;
     public void  afterPropertiesSet(){
         googleCloudStorage = StorageOptions.getDefaultInstance().getService();
-        Page<Bucket> bucketPage = googleCloudStorage.list(Storage.BucketListOption.prefix(env.getProperty(bucketNameProperty)));
+        Page<Bucket> bucketPage = googleCloudStorage.list(Storage.BucketListOption.prefix(bucketName));
         mapDecoratorBucket = bucketPage.getValues().iterator().next();
     }
 
@@ -47,7 +45,7 @@ public class PhotoStorageService implements InitializingBean {
      * @return
      * @throws IOException
      */
-    public String saveMedium(String fileName, byte[] imageData) throws IOException {
+    public String saveMedium(String fileName, byte[] imageData)  {
         return savePhoto(fileName,imageData);
     }
     public String createAndSaveThumbnail(String fileName, byte[] imageData) throws IOException {
