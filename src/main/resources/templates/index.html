@@ -305,6 +305,7 @@
                         var newFeature = newFeatures[0];
                         featuresJSONObject.push(newFeature);
                         addFeature(newFeature);
+                        currMarker.setMap(null);
                     }
                 };
                 $.ajax(request);
