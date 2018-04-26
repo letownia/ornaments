@@ -106,7 +106,9 @@ public class AJAXRequestController {
             newPhoto.setMapFeature(newFeature);
             newFeature.getPhotoList().add(newPhoto);
             mapDecoratorService.insertMapFeature(newFeature, newPhoto);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.println("Error inserting feature : " + e);
+            System.out.println("error " + e.getMessage());
             e.printStackTrace();
             return responseError("Application database error. Please try again or contact the system administrator");
         }

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class MapDecoratorService {
      * newPhoto will be inserted with newFeature, but we pass it anyway inorder to validate it.
      */
     @SuppressWarnings("unused")
-    public void insertMapFeature(@Valid MapFeature newFeature, @Valid MapFeaturePhoto newPhoto) throws IOException {
+    public void insertMapFeature(@Valid MapFeature newFeature, @Valid MapFeaturePhoto newPhoto){
         mapFeatureRepository.save(newFeature);
     }
 }
