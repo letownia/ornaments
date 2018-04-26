@@ -2,6 +2,7 @@ package com.lojasiewicz.mapDecorator.controller;
 
 import com.lojasiewicz.mapDecorator.cloudstorage.PhotoStorageService;
 import com.lojasiewicz.mapDecorator.service.MapDecoratorService;
+import com.lojasiewicz.mapDecorator.service.db.MapFeature;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,7 @@ public class AJAXRequestControllerTest {
         when(photoStorageServiceMock.createAndSaveThumbnail(any(), any())).thenReturn("thumbnailName");
         when(photoStorageServiceMock.saveMedium(any(), any())).thenReturn("mediumName");
         doNothing().when(mapDecoratorServiceMock).insertMapFeature(any(), any());
-        ResponseEntity<String> result = ajaxRequestController.insertFeature("", "","","","1","2","");
+        ResponseEntity<String> result = ajaxRequestController.insertFeature(MapFeature.Category.amphibians.toString(), "","","","1","2","");
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -52,7 +53,7 @@ public class AJAXRequestControllerTest {
         when(photoStorageServiceMock.saveMedium(any(), any())).thenReturn("mediumName");
         doNothing().when(mapDecoratorServiceMock).insertMapFeature(any(), any());
 
-        ResponseEntity<String> result = ajaxRequestController.insertFeature("","", "", "", "1", "2", "");
+        ResponseEntity<String> result = ajaxRequestController.insertFeature(MapFeature.Category.amphibians.toString(),"", "", "", "1", "2", "");
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         verify(mapDecoratorServiceMock, times(0)).insertMapFeature(any(), any());
     }

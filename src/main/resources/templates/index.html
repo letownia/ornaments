@@ -30,7 +30,7 @@
     <body >
         <!-- See https://getbootstrap.com/docs/3.3/components/#navbar-brand-image for more navbar details.. style="display:none" -->
         <div class="loadingCurtain" >
-            <img class="loadingImage" src="http://i.stack.imgur.com/pC1Tv.jpg" alt="" width="120" height="120">
+            <img class="loadingImage" src="mammals.svg" alt="" width="120" height="120">
         </div>
 
         <div class="container-fluid">
@@ -151,11 +151,14 @@
                                 <!--</svg>-->
 
                             </div>
-                            <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img
-                                    alt="Creative Commons License" style="border-width:0"
-                                    src="https://i.creativecommons.org/l/by/3.0/88x31.png"/></a><br/>This work is
-                            licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative
-                            Commons Attribution 3.0 Unported License</a>
+                            <div class="iconLicense">
+
+                                <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img
+                                        alt="Creative Commons License" style="border-width:0"
+                                        src="https://i.creativecommons.org/l/by/3.0/88x31.png"/></a><br/>This work is
+                                licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative
+                                Commons Attribution 3.0 Unported License</a>
+                            </div>
                             <!--<div class="row">Icons made by <a href="https://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel-->
                                 <!--Buddha</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed-->
                                 <!--by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"-->
@@ -176,6 +179,7 @@
                 $('.niceSelect').niceSelect();
             });
 
+            var allMarkers = [];
             var centerOfKrakow = { lng: 19.937327, lat: 50.061769};
             var gmap, currMarker, placesService;
             var autoHideInfoWindow= true;
@@ -193,12 +197,10 @@
             });
             var geocoder;
             function hideShowCategories(value, checked){
-                var selector = ".mapContainer img[src='/" + value + ".svg']";
-                if(checked){
-                    $(selector).show();
-                }else{
-                    $(selector).hide();
-                }
+                var filteredMarkers = allMarkers.filter(function (x) {
+                    return x.featureCategory == value
+                });
+                filteredMarkers.forEach( x => x.setVisible(checked) );
             }
             function categoryChanged() {
                 var x = $(".nice-select>.current>img").get(0);
@@ -221,6 +223,7 @@
             }
 
             function changeLanguage(){
+                toggleCurtain(true);
                 var newLanguage = $("select.languageSwitcher")[0].value;
                 var currURL = new URL(window.location.href);
                 currURL.searchParams.set("lang", newLanguage);
@@ -297,7 +300,11 @@
                     },
                     success: function(jqXHR) {
                         toggleCurtain(false);
-                        alert ("Feature succesfully uploaded. To view the feature, please reload");
+                        eval(jqXHR);
+                        /* Warning : javascript object "newFeatures" is intimately tied to AJAXRequestController */
+                        var newFeature = newFeatures[0];
+                        featuresJSONObject.push(newFeature);
+                        addFeature(newFeature);
                     }
                 };
                 $.ajax(request);
@@ -305,7 +312,9 @@
 
 
             function loadInitialFeatures(){
-                /*Assumes featuresJSONObject already downloaded*/
+                /*WARNING :
+                 1.) "featuresJSONObject" is tied to AJAXRequestController
+                 2.) Assumes featuresJSONObject already downloaded*/
                 featuresJSONObject.forEach(addFeature);
             }
             function addFeature(feature){
@@ -323,7 +332,8 @@
                 var newMarker = new google.maps.Marker({
                     position: latLng,
                     icon: categoryImage,
-                    map: gmap
+                    map: gmap,
+                    featureCategory : feature.category
                 });
 
                 var contentString = '<div id="content infoBitch">'
@@ -353,12 +363,13 @@
                         infowindow.close();
                     }
                 });
+                allMarkers.push(newMarker);
             }
 
             function initMap() {
                 gmap = new google.maps.Map(document.getElementById('map'), {
                     center: centerOfKrakow,
-                    zoom: 13
+                    zoom: 14
                 });
                 loadInitialFeatures();
                // placeService = new google.maps.places.PlacesService(gmap);

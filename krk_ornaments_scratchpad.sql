@@ -27,10 +27,18 @@ CREATE TABLE map_feature_photo (
 SELECT VERSION();
 
 delete from map_feature where approved = false;
-delete from map_feature_photo where approved = false;
+delete from map_feature where id >= 113;
 
 SELECT * FROM map_feature;
+
+update map_feature set name='wrony' where id= 104;
+commit;
 SELECT * FROM map_feature_photo;
+
+delete from map_feature_photo where map_feature_id = 92;
+delete from map_feature where id = 92;
+update map_feature set category = 'mammals' where id = 93;
+commit;
 
 delete from map_feature where id =83;
 

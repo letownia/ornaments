@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 public class AJAXRequestController {
@@ -57,10 +59,10 @@ public class AJAXRequestController {
      * The JSON will be a list of MapFeature with only the properties that are tagged with @Expose annotation.
      */
     public String getFeaturesJSONObject(){
-        String res = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(mapDecoratorService.getAllFeatures());
-        return "var featuresJSONObject = " + res + ";";
-        //new Gson().toJson(users.stream().map(x->x.getUserName()).collect(Collectors.toList()));
+        /*WARNING : featuresJSONObject corresponds to a javascript object in indexHTML */
+        return getJSONObjectForFeatures(mapDecoratorService.getAllFeatures(), "featuresJSONObject");
     }
+
 
     @RequestMapping(method= RequestMethod.PUT,  value="/feature", consumes = {"multipart/form-data"})
     public ResponseEntity<String> insertFeature(
@@ -94,8 +96,8 @@ public class AJAXRequestController {
             return responseError("Application photoStorageService error. Please try again or contact the system administrator");
         }
         startTime = System.nanoTime();
+        MapFeature newFeature = new MapFeature();
         try {
-            MapFeature newFeature = new MapFeature();
             newFeature.setName(name);
             newFeature.setDescription(description);
             newFeature.setCategory(MapFeature.Category.valueOf(category));
@@ -117,7 +119,8 @@ public class AJAXRequestController {
         endTime = System.nanoTime();
         System.out.println("insertMapFeature " + (endTime - startTime) / 10000000.0);
         System.out.println("Total time " + (endTime - startTotal) / 10000000.0);
-        return responseOK();
+        /* WARNING : String "newFeatures" corresponds to javascript object in index.hmtl */
+        return responseOK(getJSONObjectForFeatures(Arrays.asList(newFeature), "newFeatures"));
     }
 
     @RequestMapping(value = {"/_ah/health", "/readiness_check", "/liveness_check"})
@@ -125,8 +128,13 @@ public class AJAXRequestController {
         return new ResponseEntity<>("Healthy", HttpStatus.OK);
     }
 
-    private static ResponseEntity<String> responseOK() {
-        return ResponseEntity.ok(null);
+
+    private static String getJSONObjectForFeatures(List<MapFeature> mapFeatures, String objectName) {
+        String res = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(mapFeatures);
+        return "var " + objectName + " = " + res + ";";
+    }
+    private static ResponseEntity<String> responseOK(String responseBody) {
+        return ResponseEntity.ok(responseBody);
     }
 
     private static ResponseEntity<String> responseError(String message){
