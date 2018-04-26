@@ -64,6 +64,7 @@ public class AJAXRequestController {
 
     @RequestMapping(method= RequestMethod.PUT,  value="/feature", consumes = {"multipart/form-data"})
     public ResponseEntity<String> insertFeature(
+                                                @RequestParam("category") String category,
                                                 @RequestParam("name") String name,
                                                 @RequestParam("description") String description,
                                                 @RequestParam("googlePlaceId") String googlePlaceId,
@@ -97,6 +98,7 @@ public class AJAXRequestController {
             MapFeature newFeature = new MapFeature();
             newFeature.setName(name);
             newFeature.setDescription(description);
+            newFeature.setCategory(MapFeature.Category.valueOf(category));
             newFeature.setGooglePlaceId(googlePlaceId);
             newFeature.setLatitude(new BigDecimal(latitude));
             newFeature.setLongitude(new BigDecimal(longitude));

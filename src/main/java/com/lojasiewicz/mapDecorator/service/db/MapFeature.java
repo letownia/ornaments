@@ -37,7 +37,6 @@ public class MapFeature implements Serializable {
     private String name;
 
     @NotNull
-    @Size(max = 16)
     @Enumerated(EnumType.STRING)
     @Expose
     private Category category;

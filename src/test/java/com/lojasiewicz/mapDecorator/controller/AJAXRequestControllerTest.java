@@ -42,7 +42,7 @@ public class AJAXRequestControllerTest {
         when(photoStorageServiceMock.createAndSaveThumbnail(any(), any())).thenReturn("thumbnailName");
         when(photoStorageServiceMock.saveMedium(any(), any())).thenReturn("mediumName");
         doNothing().when(mapDecoratorServiceMock).insertMapFeature(any(), any());
-        ResponseEntity<String> result = ajaxRequestController.insertFeature("","","","1","2","");
+        ResponseEntity<String> result = ajaxRequestController.insertFeature("", "","","","1","2","");
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -52,7 +52,7 @@ public class AJAXRequestControllerTest {
         when(photoStorageServiceMock.saveMedium(any(), any())).thenReturn("mediumName");
         doNothing().when(mapDecoratorServiceMock).insertMapFeature(any(), any());
 
-        ResponseEntity<String> result = ajaxRequestController.insertFeature("", "", "", "1", "2", "");
+        ResponseEntity<String> result = ajaxRequestController.insertFeature("","", "", "", "1", "2", "");
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         verify(mapDecoratorServiceMock, times(0)).insertMapFeature(any(), any());
     }
