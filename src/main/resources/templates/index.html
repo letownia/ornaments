@@ -180,6 +180,7 @@
             });
 
             var allMarkers = [];
+            var openInfoWindow = null;
             var centerOfKrakow = { lng: 19.937327, lat: 50.061769};
             var gmap, currMarker, placesService;
             var autoHideInfoWindow= true;
@@ -345,23 +346,27 @@
                 newMarker.mediumImageURL = baseURLForImages + feature.photoList[0].mediumIdentifier;
                 newMarker.featureName = feature.name;
                 newMarker.featureDescription = feature.description;
-                var infowindow = new google.maps.InfoWindow({
+                var infoWindow = new google.maps.InfoWindow({
                     content: contentString,
                     maxWidth: 1000
                 });
                 newMarker.addListener('click', function () {
-                    infowindow.open(gmap, newMarker);
+                    if(autoHideInfoWindow && openInfoWindow != null){
+                        openInfoWindow.close();
+                    }
+                    infoWindow.open(gmap, newMarker);
                     $('.mediumImage').get(0).src = newMarker.mediumImageURL;
                     $('.featureName').get(0).innerText = newMarker.featureName;
                     $('.featureDescription').get(0).innerText = newMarker.featureDescription;
                     $("a.featureDetailsNav").click();
+                    openInfoWindow = infoWindow;
                 });
                 newMarker.addListener('mouseover', function () {
-                    infowindow.open(gmap, newMarker);
+                    infoWindow.open(gmap, newMarker);
                 });
                 newMarker.addListener('mouseout', function () {
                     if(autoHideInfoWindow) {
-                        infowindow.close();
+                        infoWindow.close();
                     }
                 });
                 allMarkers.push(newMarker);
