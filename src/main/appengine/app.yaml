@@ -35,24 +35,26 @@ env_variables:
 manual_scaling:
   instances: 1
 
-readiness_check:
-  path: "/readiness_check"
-  check_interval_sec: 120
-  timeout_sec: 4
-  failure_threshold: 2
-  success_threshold: 2
-  app_start_timeout_sec: 5000
+#readiness_check:
+#  path: "/readiness_check"
+#  check_interval_sec: 120
+#  timeout_sec: 4
+#  failure_threshold: 2
+#  success_threshold: 2
+#  app_start_timeout_sec: 5000
+#
+#liveness_check:
+#  path: "/liveness_check"
+#  check_interval_sec: 120
+#  timeout_sec: 4
+#  failure_threshold: 2
+#  success_threshold: 2
 
-liveness_check:
-  path: "/liveness_check"
-  check_interval_sec: 60
-  timeout_sec: 4
-  failure_threshold: 2
-  success_threshold: 2
-
-#health_check:
-#  enable_health_check: False
-#  check_interval_sec: 60
+vm_health_check:
+  enable_health_check: False
+health_check:
+ enable_health_check: False
+#  check_interval_sec: 120
  # check_interval_sec: 5
  # timeout_sec: 4
  # unhealthy_threshold: 2
