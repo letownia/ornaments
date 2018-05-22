@@ -24,10 +24,22 @@ CREATE TABLE map_feature_photo (
   create_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (map_feature_id) REFERENCES map_feature(id)
 );
+
+
+CREATE TABLE map_decorator_log (
+  insert_id VARCHAR(32) NOT NULL PRIMARY KEY,
+  log_name VARCHAR(64) NOT NULL,
+  receive_timestamp  DATETIME NOT NULL,
+  create_timestamp DATETIME NOT NULL,
+  db_insert_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+  textPayload VARCHAR(1024)
+);
+
+
 SELECT VERSION();
 
-delete from map_feature where approved = false;
-delete from map_feature where id >= 113;
+delete from map_feature where id = 119;
+delete from map_feature_photo where map_feature_id =119;
 
 SELECT * FROM map_feature;
 
@@ -48,7 +60,8 @@ alter table map_feature_photo MODIFY thumbnail_identifier varchar(64) NOT NULL;
 
 ALTER TABLE map_feature ADD COLUMN category enum('mythical', 'fish', 'birds', 'amphibians', 'mammals', 'reptiles', 'insects', 'arachnids');
 
-select * From map_feature;
+select * From map_feature;ls
+
 
 delete from map_feature where id in (88,89,91);
 
