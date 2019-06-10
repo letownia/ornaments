@@ -187,9 +187,8 @@
             var imageQuality = .92; //browser default is .92
             var addressoWindow;
             var imageDataURL;
-            var bucketName = '[[${@environment.getProperty("com.lojasiewicz.mapDecorator.bucketName")}]]';
-
-            /* var baseURLForImages = 'https://storage.googleapis.com/' + bucketName + '/'; */
+            /* var bucketName = '[[${@environment.getProperty("com.lojasiewicz.mapDecorator.bucketName")}]]';
+             var baseURLForImages = 'https://storage.googleapis.com/' + bucketName + '/'; */
             var baseURLForImages = 'http://localhost:8080/images';
             var noPlaceSelected= "[[#{addressError}]]";
             var currCategory ;
@@ -283,14 +282,14 @@
                 if( ! htmlForm.reportValidity()){
                     return;
                 }
-                var tempForm = new FormData(htmlForm);
+
+                let tempForm = new FormData(htmlForm);
                 tempForm.append("imageDataURL", imageDataURL);
-                var method = "PUT";
-                var url = "/feature"; // + $(".googlePlaceId").get(0).value;
-                var request = {
-                    url: url,
+
+                let request = {
+                    url: "/feature",
                     enctype: 'multipart/form-data',
-                    type: method,
+                    type: "POST",
                     processData: false,  // tell jQuery not to process the data
                     contentType: false,  // tell jQuery not to set contentType
                     cache: false,
@@ -346,7 +345,9 @@
                                     + '<img src ="' + baseURLForImages + feature.photoList[0].thumbnailIdentifier
                                     + '" max-width = "100%" max-height="100%"/>'
                                     + '</div>';
-                newMarker.mediumImageURL = baseURLForImages + feature.photoList[0].mediumIdentifier;
+                debugger;
+                /*Test if mediumPhotoIdentifier is actually valid ?? */
+                newMarker.mediumImageURL = baseURLForImages + feature.photoList[0].mediumPhotoIdentifier;
                 newMarker.featureName = feature.name;
                 newMarker.featureDescription = feature.description;
                 var infoWindow = new google.maps.InfoWindow({

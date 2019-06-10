@@ -8,6 +8,7 @@ import com.mapdecorator.repository.db.MapFeaturePhoto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,19 +64,19 @@ public class AJAXRequestController {
         return getJSONObjectForFeatures(mapDecoratorService.getAllFeatures(), "featuresJSONObject");
     }
 
-
-    @RequestMapping(method= RequestMethod.PUT,  value="/feature", consumes = {"multipart/form-data"})
+    @PostMapping("/feature")
     public ResponseEntity<String> insertFeature(
-                                                @RequestParam("category") String category,
-                                                @RequestParam("name") String name,
-                                                @RequestParam("description") String description,
-                                                @RequestParam("googlePlaceId") String googlePlaceId,
-                                                @RequestParam("latitude") String latitude,
-                                                @RequestParam("longitude") String longitude,
-                                                @RequestParam("imageDataURL") String imageDataURL
+                                                @RequestParam String category,
+                                                @RequestParam String name,
+                                                @RequestParam String description,
+                                                @RequestParam String googlePlaceId,
+                                                @RequestParam String latitude,
+                                                @RequestParam String longitude,
+                                                @RequestParam String imageDataURL
                                                 ){
 
-        String mediumPhotoName = "", thumbnailPhotoName = "";
+        String mediumPhotoName = "";
+        String thumbnailPhotoName = "";
         long startTime,endTime, startTotal;
         startTotal = System.nanoTime();
         try {
@@ -100,12 +101,12 @@ public class AJAXRequestController {
         try {
             newFeature.setName(name);
             newFeature.setDescription(description);
-            newFeature.setCategory(MapFeature.Category.valueOf(category));
+            newFeature.setCategory(MapFeature.Category.valueOf(category.toUpperCase()));
             newFeature.setGooglePlaceId(googlePlaceId);
             newFeature.setLatitude(new BigDecimal(latitude));
             newFeature.setLongitude(new BigDecimal(longitude));
             MapFeaturePhoto newPhoto = new MapFeaturePhoto();
-            newPhoto.setMediumIdentifier(mediumPhotoName);
+            newPhoto.setMediumPhotoIdentifier(mediumPhotoName);
             newPhoto.setThumbnailIdentifier(thumbnailPhotoName);
             newPhoto.setMapFeature(newFeature);
             newFeature.getPhotoList().add(newPhoto);
@@ -127,7 +128,6 @@ public class AJAXRequestController {
     public ResponseEntity<String> healthCheck() {
         return new ResponseEntity<>("Healthy", HttpStatus.OK);
     }
-
 
     private static String getJSONObjectForFeatures(List<MapFeature> mapFeatures, String objectName) {
         String res = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(mapFeatures);

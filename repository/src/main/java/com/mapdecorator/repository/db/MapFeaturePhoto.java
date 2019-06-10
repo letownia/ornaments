@@ -19,7 +19,7 @@ public class MapFeaturePhoto implements Serializable {
   @Size(min = 1, max = 512)
   @NotNull
   @Expose
-  private String mediumIdentifier;
+  private String mediumPhotoIdentifier;
 
   @Size(min = 1, max = 512)
   @NotNull
@@ -46,12 +46,12 @@ public class MapFeaturePhoto implements Serializable {
     this.mapFeature = mapFeature;
   }
 
-  public String getMediumIdentifier() {
-    return mediumIdentifier;
+  public String getMediumPhotoIdentifier() {
+    return mediumPhotoIdentifier;
   }
 
-  public void setMediumIdentifier(String mediumIdentifier) {
-    this.mediumIdentifier = mediumIdentifier;
+  public void setMediumPhotoIdentifier(String mediumPhotoIdentifier) {
+    this.mediumPhotoIdentifier = mediumPhotoIdentifier;
   }
 
   public String getThumbnailIdentifier() {

@@ -17,22 +17,20 @@ CREATE TABLE map_feature (
 ALTER TABLE map_feature
   ADD CONSTRAINT check_category CHECK (category IN ('MYTHICAL', 'FISH', 'BIRDS', 'AMPHIBIANS', 'MAMMALS', 'REPTILES', 'INSECTS', 'ARACHNIDS'));
 
-
-CREATE TABLE map_feature_photo_data (
-  id      INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  data MEDIUMBLOB NOT NULL
-);
+--
+-- CREATE TABLE map_feature_photo_data (
+--   id      INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+--   data MEDIUMBLOB NOT NULL
+-- );
 
 
 CREATE TABLE map_feature_photo (
   id               INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
   map_feature_id INT            NOT NULL,
-  thumbnail_id INT              NOT NULL,
-  medium_photo_id     INT           NOT NULL,
+  thumbnail_identifier VARCHAR(512)      NOT NULL,
+  medium_photo_identifier  VARCHAR(512)  NOT NULL,
   create_timestamp   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (map_feature_id) REFERENCES map_feature(id),
-  FOREIGN KEY (thumbnail_id) REFERENCES map_feature_photo_data(id),
-  FOREIGN KEY (medium_photo_id) REFERENCES map_feature_photo_data(id)
+  FOREIGN KEY (map_feature_id) REFERENCES map_feature(id)
 );
 
 

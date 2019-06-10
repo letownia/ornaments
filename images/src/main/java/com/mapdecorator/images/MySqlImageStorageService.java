@@ -6,50 +6,38 @@ import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MySqlImageStorageService implements ImageStorageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MySqlImageStorageService.class);
 
     public static final int THUMBNAIL_MAX_WIDTH = 160;
     public static final int THUMBNAIL_MAX_HEIGHT = 120;
     private static final int maxAttemptCount = 5;
-    // Taken from https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto */
+
+    private String imageDirectory;
     private static final int CONDITION_NOT_MET = 412;
-    private static final String FILE_TYPE = "jpg";
-//    private Bucket mapDecoratorBucket;
-//    private Storage googleCloudStorage;
-    public void  afterPropertiesSet(){
-      //        googleCloudStorage = StorageOptions.getDefaultInstance().getService();
-      //        Page<Bucket> bucketPage = googleCloudStorage.list(Storage.BucketListOption.prefix(bucketName));
-      //        mapDecoratorBucket = bucketPage.getValues().iterator().next();
+    static final String FILE_TYPE = "jpg";
+
+    public MySqlImageStorageService(@Value("${mapdecorator.images.save-directory}")String imageDirectory){
+        this.imageDirectory = imageDirectory;
     }
-//  @Override
-//  public String saveMedium(String fileName, byte[] imageData) {
-//    return null;
-//  }
-//
-//  @Override
-//  public String createAndSaveThumbnail(String fileName, byte[] imageData) throws IOException {
-//    return null;
-//  }
-    /**
-     * Uploads a blob to google-cloud-storage and returns the potentially modified file-name.
-     *
-     * @param fileName potentially modified if blob already exists
-     * @param imageData photo to upload
-     * @return
-     * @throws IOException
-     */
+
     @Override
-    public String saveMedium(String fileName, byte[] imageData)  {
-        return savePhoto(fileName,imageData);
+    public String saveMedium(String imageFileName, byte[] imageData)  {
+        return savePhotoToDisk(imageFileName,imageData);
     }
+
     @Override
-    public String createAndSaveThumbnail(String fileName, byte[] imageData) throws IOException {
+    public String createAndSaveThumbnail(String imageFileName, byte[] imageData) throws IOException {
         /* Determining newWidth/Height */
         BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(imageData));
         int newWidth = inputImage.getWidth();
@@ -78,14 +66,17 @@ public class MySqlImageStorageService implements ImageStorageService {
         byte[] imageInByte = baos.toByteArray();
         baos.close();
 
-        return savePhoto(fileName, imageInByte);
+        return savePhotoToDisk(imageFileName, imageInByte);
     }
 
 
-    private String savePhoto(String fileName, byte[] imageData){
-        int attemptCount = 0;
-        String suffix = "";
-        String pathName = "";
+    private String savePhotoToDisk(String imageFileName, byte[] imageData){
+        String pathName = imageDirectory + "/" + imageFileName + FILE_TYPE;
+        try (FileOutputStream fos = new FileOutputStream(pathName)) {
+            fos.write(imageData);
+        }catch(Exception e){
+            logger.error("Exception during saveFile :"  + e.getMessage());
+        }
 //        while (attemptCount < maxAttemptCount) {
 //            try {
 //                pathName = fileName + suffix + "." + FILE_TYPE;
