@@ -1,189 +1,194 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.lojasiewicz</groupId>
-    <artifactId>mapDecorator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+  <groupId>com.mapdecorator</groupId>
+  <artifactId>map-decorator-parent</artifactId>
+  <version>0.0.3-SNAPSHOT</version>
 
-    <name>Map Decorator</name>
-    <description>Demo project for Spring Boot</description>
+  <modules>
+    <module>database</module>
+    <module>repository</module>
+    <module>controller</module>
+    <module>service</module>
+    <module>images</module>
+  </modules>
+  <packaging>pom</packaging>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.0.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-        <!--
-            <maven.compiler.source>${java.version}</maven.compiler.source>
-            <maven.compiler.target>${java.version}</maven.compiler.target>
-            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-            <appengine.maven.plugin>1.3.2</appengine.maven.plugin>
-       -->
-    </parent>
+  <name>Map Decorator</name>
+  <description>Demo project for Spring Boot</description>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source> <!-- REQUIRED -->
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.0.0.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+    <!--
+        <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <appengine.target.version>1.3.2</appengine.target.version>
-       <!-- <INSTANCE_CONNECTION_NAME>mapdecorator:europe-west3:map-decorator-db</INSTANCE_CONNECTION_NAME>
-        <user>root</user>
-        <password>epodroznik</password>
-        <database>krk_ornaments</database>-->
-        <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
-    </properties>
+        <appengine.maven.plugin>1.3.2</appengine.maven.plugin>
+   -->
+  </parent>
 
+  <properties>
+    <java.version>1.8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source> <!-- REQUIRED -->
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <appengine.target.version>1.3.2</appengine.target.version>
+    <!-- <INSTANCE_CONNECTION_NAME>mapdecorator:europe-west3:map-decorator-db</INSTANCE_CONNECTION_NAME>
+     <user>root</user>
+     <password>epodroznik</password>
+     <database>krk_ornaments</database>-->
+    <map.decorator.version>0.0.3-SNAPSHOT</map.decorator.version>
+    <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
+  </properties>
+
+  <dependencyManagement>
     <dependencies>
-
-        <!--
-        In essence, Actuator brings production-ready features to our application.
-        Monitoring our app, gathering metrics, understanding traffic or the state
-        of our database becomes trivial with this dependency.
-
-        http://www.baeldung.com/spring-boot-actuators#understanding-actuator
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        -->
-        <!--
-       <dependency>
-           <groupId>javax.transaction</groupId>
-           <artifactId>jta</artifactId>
-           <version>1.1</version>
-       </dependency>-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jetty</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <version>${spring.boot.version}</version>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring.boot.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.cloud.sql</groupId>
-            <artifactId>mysql-socket-factory</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.warmuuh</groupId>
-            <artifactId>libsass-maven-plugin</artifactId>
-            <version>0.2.9-libsass_3.4.7</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.2.11</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-storage</artifactId>
-            <version>1.24.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.2</version>
-        </dependency>
-
+      <!--<dependency>-->
+      <!--<groupId>com.mapdecorator</groupId>-->
+      <!--<artifactId>map-decorator-parent</artifactId>-->
+      <!--<version>${map.decorator.version}</version>-->
+      <!--</dependency>-->
+      <!--<dependency>-->
+      <!--<groupId>com.mapdecorator</groupId>-->
+      <!--<artifactId>file-server</artifactId>-->
+      <!--<version>${map.decorator.version}</version>-->
+      <!--</dependency>-->
+      <dependency>
+        <groupId>com.mapdecorator</groupId>
+        <artifactId>images</artifactId>
+        <version>${map.decorator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.mapdecorator</groupId>
+        <artifactId>repository</artifactId>
+        <version>${map.decorator.version}</version>
+      </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>appengine-maven-plugin</artifactId>
-                <version>${appengine.target.version}</version>
-                <configuration>
-                    <project>mapdecorator</project>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>
-                    <executable>true</executable>
-                </configuration>-->
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- WARNING - test will only work with forkCount==0. For some reason creating a fork fails,
-                        and no tests will pass otherwise. For more information search google with string :
-                        "Error occurred in starting fork, check output in log"
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>${spring.boot.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <version>${spring.boot.version}</version>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring.boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.2</version>
+    </dependency>
+
+    <!--<dependency>-->
+    <!--<groupId>com.google.cloud</groupId>-->
+    <!--<artifactId>google-cloud-storage</artifactId>-->
+    <!--<version>1.24.1</version>-->
+    <!--</dependency>-->
+    <!--
+    In essence, Actuator brings production-ready features to our application.
+    Monitoring our app, gathering metrics, understanding traffic or the state
+    of our database becomes trivial with this dependency.
+
+    http://www.baeldung.com/spring-boot-actuators#understanding-actuator
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    -->
+    <!--
+   <dependency>
+       <groupId>javax.transaction</groupId>
+       <artifactId>jta</artifactId>
+       <version>1.1</version>
+   </dependency>-->
+    <!--<dependency>-->
+    <!--<groupId>org.springframework.boot</groupId>-->
+    <!--<artifactId>spring-boot-starter-webflux</artifactId>-->
+    <!--<version>${spring.boot.version}</version>-->
+    <!--</dependency>-->
+    <!---->
+    <!--<dependency>-->
+    <!--<groupId>org.springframework.boot</groupId>-->
+    <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+    <!--<version>${spring.boot.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+    <!--<groupId>org.springframework.boot</groupId>-->
+    <!--<artifactId>spring-boot-starter-jetty</artifactId>-->
+    <!--<version>${spring.boot.version}</version>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+    <!--<groupId>com.google.cloud.sql</groupId>-->
+    <!--<artifactId>mysql-socket-factory</artifactId>-->
+    <!--<version>1.0.3</version>-->
+    <!--</dependency>-->
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!--<plugin>-->
+      <!--<groupId>com.google.cloud.tools</groupId>-->
+      <!--<artifactId>appengine-maven-plugin</artifactId>-->
+      <!--<version>${appengine.target.version}</version>-->
+      <!--<configuration>-->
+      <!--<project>mapdecorator</project>-->
+      <!--</configuration>-->
+      <!--</plugin>-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <inherited>false</inherited>                      <!-- Add this line -->
+        <version>3.1.0</version>
+        <!--<configuration>-->
+        <!--<configLocation>-->
+        <!--(unique to the parent)-->
+        <!--</configLocation>-->
+        <!--</configuration>-->
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- WARNING - test will only work with forkCount==0. For some reason creating a fork fails,
+              and no tests will pass otherwise. For more information search google with string :
+              "Error occurred in starting fork, check output in log"
 -->
-                    <forkCount>0</forkCount>
-                    <argLine>-Xmx1024m </argLine>
-                </configuration>
-                <version>2.20.1</version>
-            </plugin>
-            <plugin>
-                <groupId>com.github.warmuuh</groupId>
-                <artifactId>libsass-maven-plugin</artifactId>
-                <version>0.2.9-libsass_3.4.7</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <inputPath>${basedir}/src/main/resources/scss/</inputPath>
-                    <outputPath>${basedir}/target/classes/static/css</outputPath>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+          <forkCount>0</forkCount>
+          <argLine>-Xmx1024m</argLine>
+        </configuration>
+        <version>2.20.1</version>
+      </plugin>
+
+    </plugins>
+  </build>
 
 </project>
