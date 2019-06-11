@@ -189,7 +189,7 @@
             var imageDataURL;
             /* var bucketName = '[[${@environment.getProperty("com.lojasiewicz.mapDecorator.bucketName")}]]';
              var baseURLForImages = 'https://storage.googleapis.com/' + bucketName + '/'; */
-            var baseURLForImages = 'http://localhost:8080/images';
+            var baseURLForImages = 'http://localhost:8080/images/';
             var noPlaceSelected= "[[#{addressError}]]";
             var currCategory ;
             setCustomValidationMessages();
@@ -345,7 +345,6 @@
                                     + '<img src ="' + baseURLForImages + feature.photoList[0].thumbnailIdentifier
                                     + '" max-width = "100%" max-height="100%"/>'
                                     + '</div>';
-                debugger;
                 /*Test if mediumPhotoIdentifier is actually valid ?? */
                 newMarker.mediumImageURL = baseURLForImages + feature.photoList[0].mediumPhotoIdentifier;
                 newMarker.featureName = feature.name;

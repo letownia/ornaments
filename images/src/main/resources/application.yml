@@ -1,3 +1,4 @@
 mapdecorator:
   images:
-    save-directory: /home/borg/IdeaProjects/ornaments/saveDirectory
+    save-directory:
+        /home/borg/IdeaProjects/ornaments/saveDirectory
