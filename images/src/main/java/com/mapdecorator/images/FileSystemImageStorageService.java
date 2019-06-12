@@ -74,7 +74,7 @@ public class FileSystemImageStorageService implements ImageStorageService {
 
   @Override
   public BufferedImage getImage(String relativePathWithFileName) throws IOException {
-    return ImageIO.read(new File(saveDirectory +"/" + relativePathWithFileName));
+    return ImageIO.read(new File(saveDirectory + "/" + relativePathWithFileName));
   }
 
   @Override

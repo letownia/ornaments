@@ -13,7 +13,7 @@
     <script src="/jquery.nice-select.v2.js"></script>
     <!-- Only used to stylize the file-input button -->
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-filestyle/2.1.0/bootstrap-filestyle.min.js"></script>-->
-    <script src="/featuresJSONObject"></script>
+    <script src="/allFeatures"></script>
     <script src="/allCategories"></script>
     <script src="/bootstrap-select.js"></script>
     <head>
@@ -46,8 +46,8 @@
                 <li class="nav-item  ml-auto">
                     <select class="bootstrap-select languageSwitcher" onchange="changeLanguage()">
                         <option th:each="locale : ${allSupportedLocales}" th:value="${locale.localeCode}"
-                        th:text="${locale.displayName}"
-                        th:selected="${currentSupportedLocale.equals(locale)}"></option>
+                            th:text="${locale.displayName}" th:selected="${currentSupportedLocale.equals(locale)}">
+                        </option>
                     </select>
                 </li>
             </ul>
@@ -303,10 +303,10 @@
                     },
                     success: function(jqXHR) {
                         toggleCurtain(false);
-                        eval(jqXHR);
+                        var newFeatures = jqXHR;
                         /* Warning : javascript object "newFeatures" is intimately tied to AJAXRequestController */
                         var newFeature = newFeatures[0];
-                        featuresJSONObject.push(newFeature);
+                        allFeatures.push(newFeature);
                         addFeature(newFeature);
                         currMarker.setMap(null);
                     }
@@ -317,9 +317,10 @@
 
             function loadInitialFeatures(){
                 /*WARNING :
-                 1.) "featuresJSONObject" is tied to AJAXRequestController
-                 2.) Assumes featuresJSONObject already downloaded*/
-                featuresJSONObject.forEach(addFeature);
+                 1.) "allFeatures" string is defined in AJAXRequestController.java
+                 2.) Assumes /allFeatures already downloaded - javascript download order should enforce that
+                 */
+                allFeatures.forEach(addFeature);
             }
             function addFeature(feature){
                 var categoryImage = {

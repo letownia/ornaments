@@ -8,9 +8,10 @@ import com.mapdecorator.service.MapDecoratorService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +26,10 @@ import org.springframework.web.servlet.HandlerMapping;
 @RestController
 public class AJAXRequestController {
 
+  private static final Logger logger = LoggerFactory.getLogger(AJAXRequestController.class);
   private final MapDecoratorService mapDecoratorService;
   private final ImageStorageService imageStorageService;
 
-  /**
-   * This comment should be moved to some sort of documentation:
-   *
-   * We have decided to use the standards suggested in the latest spring-documentation :
-   * https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/beans.html#beans-constructor-injection
-   *
-   * Constructor injection is the standard choice for our beans, with setter injection being permitted only in the case
-   * of optional or reassignable dependencies. Field injection is to be *avoided*!
-   */
   @Autowired
   public AJAXRequestController(MapDecoratorService mapDecoratorService, ImageStorageService imageStorageService) {
     this.mapDecoratorService = mapDecoratorService;
@@ -52,52 +45,42 @@ public class AJAXRequestController {
     imageStorageService.writeImageToOutputStream(pathWithFilename, response.getOutputStream());
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/allCategories")
   /**
-   * Get's all the features as a single JSON object.
-   * The JSON will be a list of MapFeature with only the properties that are tagged with @Expose annotation.
+   * Get's all the categories as a single JSON object named allCategories
    */
+  @RequestMapping(method = RequestMethod.GET, value = "/allCategories")
   public String getAllCategories() {
-    String res = new GsonBuilder().create().toJson(MapFeature.Category.values());
-    return "var allCategories = " + res + ";";
+    return "var allCategories = " + toJSONString(MapFeature.Category.values()) + ";";
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/featuresJSONObject")
   /**
-   * Get's all the features as a single JSON object.
+   * Get's all the features as a single JSON object named allFeatures.
    * The JSON will be a list of MapFeature with only the properties that are tagged with @Expose annotation.
    */
+  @RequestMapping(method = RequestMethod.GET, value = "/allFeatures")
   public String getFeaturesJSONObject() {
-    /*WARNING : featuresJSONObject corresponds to a javascript object in indexHTML */
-    return getJSONObjectForFeatures(mapDecoratorService.getAllFeatures(), "featuresJSONObject");
+    return "var allFeatures = " + toJSONStringOnlyExposedFields(mapDecoratorService.getAllFeatures()) + ";";
   }
 
   @PostMapping("/feature")
-  public ResponseEntity<String> insertFeature(
-      @RequestParam String category,
-      @RequestParam String name,
-      @RequestParam String description,
-      @RequestParam String googlePlaceId,
-      @RequestParam String latitude,
-      @RequestParam String longitude,
-      @RequestParam String imageDataURL
-  ) {
+  public ResponseEntity<String> insertFeature(@RequestParam String category, @RequestParam String name,
+      @RequestParam String description, @RequestParam String googlePlaceId, @RequestParam String latitude,
+      @RequestParam String longitude, @RequestParam String imageDataURL) {
 
-    long startTime, endTime, startTotal;
+    long startTime, startTotal;
     startTotal = System.nanoTime();
     try {
       startTime = System.nanoTime();
       byte[] photoBytes = ImageStorageService.imagaDataURLtoBinary(imageDataURL);
-      endTime = System.nanoTime();
-      System.out.println("imagaDataURLtoBinary " + (endTime - startTime) / 10000000.0);
+      logTimeDifference("imagaDataURLtoBinary", startTime, System.nanoTime());
+
       startTime = System.nanoTime();
       imageStorageService.saveMedium(googlePlaceId, photoBytes);
-      endTime = System.nanoTime();
-      System.out.println("saveMedium " + (endTime - startTime) / 10000000.0);
+      logTimeDifference("saveMedium ", startTime, System.nanoTime());
+
       startTime = System.nanoTime();
       imageStorageService.createAndSaveThumbnail(googlePlaceId, photoBytes);
-      endTime = System.nanoTime();
-      System.out.println("createAndSaveThumbnail " + (endTime - startTime) / 10000000.0);
+      logTimeDifference("createAndSaveThumbnail ", startTime, System.nanoTime());
     } catch (IOException e) {
       e.printStackTrace();
       return responseError(
@@ -124,11 +107,10 @@ public class AJAXRequestController {
       e.printStackTrace();
       return responseError("Application database error. Please try again or contact the system administrator");
     }
-    endTime = System.nanoTime();
-    System.out.println("insertMapFeature " + (endTime - startTime) / 10000000.0);
-    System.out.println("Total time " + (endTime - startTotal) / 10000000.0);
-    /* WARNING : String "newFeatures" corresponds to javascript object in index.hmtl */
-    return responseOK(getJSONObjectForFeatures(Arrays.asList(newFeature), "newFeatures"));
+    logTimeDifference("insertMapFeature", startTime, System.nanoTime());
+    logTimeDifference("Total time", startTotal, System.nanoTime());
+
+    return responseOK(toJSONStringOnlyExposedFields(Arrays.asList(newFeature)));
   }
 
   @RequestMapping(value = {"/_ah/health", "/readiness_check", "/liveness_check"})
@@ -136,9 +118,17 @@ public class AJAXRequestController {
     return new ResponseEntity<>("Healthy", HttpStatus.OK);
   }
 
-  private static String getJSONObjectForFeatures(List<MapFeature> mapFeatures, String objectName) {
-    String res = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(mapFeatures);
-    return "var " + objectName + " = " + res + ";";
+  private static void logTimeDifference(String text, long startNanoseconds, long endNanoseconds){
+    long durationMilliseconds = (endNanoseconds - startNanoseconds) / 10000000;
+    logger.info(text + " took " + durationMilliseconds + "ms");
+  }
+
+  private static String toJSONStringOnlyExposedFields(Object someObject) {
+    return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(someObject);
+  }
+
+  private static String toJSONString(Object someObject) {
+    return new GsonBuilder().create().toJson(someObject);
   }
 
   private static ResponseEntity<String> responseOK(String responseBody) {
@@ -146,7 +136,6 @@ public class AJAXRequestController {
   }
 
   private static ResponseEntity<String> responseError(String message) {
-    ResponseEntity<String> errorResponse = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-    return errorResponse;
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
   }
 }

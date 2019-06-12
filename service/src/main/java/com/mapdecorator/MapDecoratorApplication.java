@@ -1,6 +1,5 @@
 package com.mapdecorator;
 
-import java.sql.SQLException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -18,17 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 public class MapDecoratorApplication {
 
-	public static void main(String[] args) throws SQLException {
-		SpringApplication.run(MapDecoratorApplication.class, args);
-//		MysqlDataSource dataSource = new MysqlDataSource();
-//		dataSource.setUser("root");
-//		dataSource.setPassword("");
-//		dataSource.setDatabaseName("map_decorator");
-//		Connection conn = dataSource.getConnection();
-//		Statement stmt = conn.createStatement();
-//		ResultSet rs = stmt.executeQuery("SELECT ID FROM USERS");
-//		rs.close();
-//		stmt.close();
-//		conn.close();
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(MapDecoratorApplication.class, args);
+  }
 }
