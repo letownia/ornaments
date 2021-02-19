@@ -1,7 +1,7 @@
 DROP DATABASE map_decorator;
 CREATE DATABASE IF NOT EXISTS map_decorator;
-
-USE map_decorator;
+CREATE DATABASE IF NOT EXISTS artifacts;
+USE map_decorator OR artifacts;
 CREATE TABLE map_feature (
   id               INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
   name             VARCHAR(512) NOT NULL,

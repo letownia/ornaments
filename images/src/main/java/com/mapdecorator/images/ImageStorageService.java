@@ -11,9 +11,9 @@ public interface ImageStorageService {
       return DatatypeConverter.parseBase64Binary(imageDataURL.substring(imageDataURL.indexOf(',') + 1));
   }
 
-  String saveMedium(String imageFileName, byte[] imageData);
+  String saveMedium(String identifier, byte[] imageData);
 
-  String createAndSaveThumbnail(String imageFileName, byte[] imageData) throws IOException;
+  String createAndSaveThumbnail(String identifier, byte[] imageData) throws IOException;
 
   BufferedImage getImage(String relativePathWithFileName) throws IOException;
 

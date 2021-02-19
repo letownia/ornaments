@@ -32,6 +32,7 @@ public class AJAXRequestController {
 
   @Autowired
   public AJAXRequestController(MapDecoratorService mapDecoratorService, ImageStorageService imageStorageService) {
+    logger.info("Starting AJAXRequestController with {} and {}", mapDecoratorService.getClass(), imageStorageService.getClass());
     this.mapDecoratorService = mapDecoratorService;
     this.imageStorageService = imageStorageService;
   }

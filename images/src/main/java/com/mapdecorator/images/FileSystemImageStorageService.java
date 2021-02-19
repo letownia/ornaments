@@ -37,6 +37,7 @@ public class FileSystemImageStorageService implements ImageStorageService {
 
   public FileSystemImageStorageService(@Value("${mapdecorator.images.save-directory}") String saveDirectory) {
     Objects.requireNonNull(saveDirectory);
+    logger.info("Starting FileSystemImageStorageService w/ directory :" + saveDirectory);
     this.saveDirectory = saveDirectory;
     mediumPhotoDirectory = saveDirectory + "/" + MEDIUM_FOLDER;
     thumbnailDirectory =  saveDirectory + "/" + THUMBNAIL_FOLDER;
@@ -74,12 +75,15 @@ public class FileSystemImageStorageService implements ImageStorageService {
 
   @Override
   public BufferedImage getImage(String relativePathWithFileName) throws IOException {
-    return ImageIO.read(new File(saveDirectory + "/" + relativePathWithFileName));
+    String fullPath = saveDirectory + "/" + relativePathWithFileName;
+    logger.info("Getting image w/ path " +  fullPath);
+    return ImageIO.read(new File(fullPath));
   }
 
   @Override
   public void writeImageToOutputStream(String relativePathWithFileName, OutputStream outputStream) throws IOException {
     BufferedImage image = getImage(relativePathWithFileName);
+    logger.info("Uploading image w/ path :" +  relativePathWithFileName);
     ImageIO.write(image, FILE_TYPE, outputStream);
   }
 

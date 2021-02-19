@@ -37,8 +37,8 @@
      <user>root</user>
      <password>epodroznik</password>
      <database>krk_ornaments</database>-->
-    <map.decorator.version>1.0.0</map.decorator.version>
-    <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
+    <map.decorator.version>2.0.1</map.decorator.version>
+    <spring.boot.version>2.2.6.RELEASE</spring.boot.version>
   </properties>
 
   <dependencyManagement>

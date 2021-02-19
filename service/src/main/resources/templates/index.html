@@ -189,7 +189,9 @@
             var imageDataURL;
             /* var bucketName = '[[${@environment.getProperty("com.lojasiewicz.mapDecorator.bucketName")}]]';
              var baseURLForImages = 'https://storage.googleapis.com/' + bucketName + '/'; */
-            var baseURLForImages = 'http://localhost:8080/images/';
+            // var baseURLForImages = 'http://localhost:8080/images/';
+            var baseURLForMediumPhotos= 'http://localhost:6970/images/medium/';
+            var baseURLForThumbnails= 'http://localhost:6970/images/thumbnails/';
             var noPlaceSelected= "[[#{addressError}]]";
             var currCategory ;
             setCustomValidationMessages();
@@ -343,11 +345,11 @@
 
                 var contentString = '<div id="content infoBitch">'
                                     + '<p>' + feature.name + '</p>'
-                                    + '<img src ="' + baseURLForImages + feature.photoList[0].thumbnailIdentifier
+                                    + '<img src ="' + baseURLForThumbnails + feature.photoList[0].thumbnailIdentifier + ".jpg"
                                     + '" max-width = "100%" max-height="100%"/>'
                                     + '</div>';
                 /*Test if mediumPhotoIdentifier is actually valid ?? */
-                newMarker.mediumImageURL = baseURLForImages + feature.photoList[0].mediumPhotoIdentifier;
+                newMarker.mediumImageURL = baseURLForMediumPhotos + feature.photoList[0].mediumPhotoIdentifier + ".jpg";
                 newMarker.featureName = feature.name;
                 newMarker.featureDescription = feature.description;
                 var infoWindow = new google.maps.InfoWindow({

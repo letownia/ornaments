@@ -9,6 +9,10 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <properties>
+        <start-class>com.mapdecorator.MapDecoratorApplication</start-class>
+  </properties>
+
   <groupId>com.mapdecorator</groupId>
   <artifactId>service</artifactId>
 
@@ -49,7 +53,13 @@
   </dependencies>
 
   <build>
+    <finalName>service-final</finalName>
     <plugins>
+      <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
       <plugin>
         <groupId>com.github.warmuuh</groupId>
         <artifactId>libsass-maven-plugin</artifactId>
