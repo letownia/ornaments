@@ -83,7 +83,7 @@ public class FileSystemImageStorageService implements ImageStorageService {
   @Override
   public void writeImageToOutputStream(String relativePathWithFileName, OutputStream outputStream) throws IOException {
     BufferedImage image = getImage(relativePathWithFileName);
-    logger.info("Uploading image w/ path :" +  relativePathWithFileName);
+    logger.info("Hosting image w/ path :" +  relativePathWithFileName);
     ImageIO.write(image, FILE_TYPE, outputStream);
   }
 

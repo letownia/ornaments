@@ -99,10 +99,14 @@
                                         <!--<input type="text" name="name" required="required" minlength="3"-->
                                                <!--maxlength="20"/>-->
                                     <!--</form>-->
+
                                     <form id="featureForm">
                                         <p>
                                             <label th:text="#{addressLabel}"></label>
-                                                <label class="address"/>
+                                            <input id="search-box" class="controls pac-target-input" type="text" th:attr="placeholder=#{emptySearchBoxLabel}">
+                                        </p>
+                                        <p>
+                                            <label class="address"/>
                                         </p>
                                         <div class="selectHolder">
                                             <label th:text="#{categoriesLabel}"></label>
@@ -131,9 +135,9 @@
                                         <button type="button" onclick="submitFeature()" th:text="#{submitButton}">
                                             TextNotLoaded
                                         </button>
-                                        <input type="hidden" name="googlePlaceId"/>
-                                        <input type="hidden" name="latitude"/>
-                                        <input type="hidden" name="longitude"/>
+                                        <input type="hidden" name="googlePlaceId" required="required"/>
+                                        <input type="hidden" name="latitude" required="required"/>
+                                        <input type="hidden" name="longitude" required="required"/>
                                     </form>
                                 </div>
                             </div>
@@ -183,6 +187,7 @@
             var openInfoWindow = null;
             var centerOfKrakow = { lng: 19.937327, lat: 50.061769};
             var gmap, currMarker, placesService;
+            var searchBox;
             var autoHideInfoWindow= true;
             var imageQuality = .92; //browser default is .92
             var addressoWindow;
@@ -378,48 +383,80 @@
                 allMarkers.push(newMarker);
             }
 
+            function handleSearchBoxEntry() {
+                const places = searchBox.getPlaces();
+                console.log("PLACE CHANGED places.length : " + places.length);
+                if (places.length == 0) {
+                    return;
+                }
+                updateMarker(places[0].geometry.location);
+                updateSelectedAddress(places);
+            }
+
+            function updateMarker(latLng) {
+                if (currMarker != null) {
+                    currMarker.setMap(null);
+                }
+                currMarker = new google.maps.Marker({
+                    position: latLng,
+                    map: gmap
+                });
+                currMarker.addListener('mouseover', function(){
+                    addressoWindow.open(gmap, currMarker);
+                });
+                currMarker.addListener('mouseout', function(){
+                    addressoWindow.close();
+                });
+
+
+            }
+            function updateSelectedAddress(placesResult){
+                console.log("Updating with placesResult " + placesResult);
+                var filteredResults = placesResult.filter(function (x) {
+                    return x.types[0] === "street_address"
+                });
+                if (filteredResults.length > 0) {
+                    var chosenResult = filteredResults[0];
+                    $('[name="googlePlaceId"]').get(0).value = chosenResult.place_id;
+                    $('[name="latitude"]').get(0).value = chosenResult.geometry.location.lat();
+                    $('[name="longitude"]').get(0).value = chosenResult.geometry.location.lng();
+                    $('label.address').text(chosenResult.formatted_address);
+                    addressoWindow.setContent(chosenResult.formatted_address);
+                } else {
+                    $('[name="googlePlaceId"]').get(0).value = null;
+                    $('[name="latitude"]').get(0).value = null;
+                    $('[name="longitude"]').get(0).value = null;
+                    $('label.address').text(noPlaceSelected);
+                }
+
+            }
+
             function initMap() {
                 gmap = new google.maps.Map(document.getElementById('map'), {
                     center: centerOfKrakow,
                     zoom: 14
                 });
                 loadInitialFeatures();
-               // placeService = new google.maps.places.PlacesService(gmap);
+
+                const input = document.getElementById("search-box");
+                searchBox = new google.maps.places.SearchBox(input);
+                searchBox.addListener("places_changed", handleSearchBoxEntry);
+
+                // placeService = new google.maps.places.PlacesService(gmap);
                 geocoder = new google.maps.Geocoder;
 
                 addressoWindow = new google.maps.InfoWindow({
                     content: ""
                 });
+
                 google.maps.event.addListener(gmap, 'click', function(event) {
-                    if(currMarker != null){
-                        currMarker.setMap(null);
-                    }
-                    currMarker = new google.maps.Marker({
-                        position: event.latLng,
-                        map: gmap
-                    });
+
+                    updateMarker(event.latLng);
 
                     geocoder.geocode({'location': event.latLng}, function(results,status){
-                            var filteredResults = results.filter(function (x) {
-                                return x.types[0] === "street_address"
-                            });
-                            if(status === 'OK' && filteredResults.length > 0) {
-                                var chosenResult = filteredResults[0];
-                                $('[name="googlePlaceId"]').get(0).value = chosenResult.place_id;
-                                $('[name="latitude"]').get(0).value = chosenResult.geometry.location.lat();
-                                $('[name="longitude"]').get(0).value = chosenResult.geometry.location.lng();
-                                $('label.address').text(chosenResult.formatted_address);
-                                addressoWindow.setContent(chosenResult.formatted_address);
-                            }else{
-                                $('label.address').text(noPlaceSelected);
-                            }
+                        if(status === 'OK') {
+                            updateSelectedAddress(results);
                         }
-                    );
-                    currMarker.addListener('mouseover', function(){
-                        addressoWindow.open(gmap, currMarker);
-                    });
-                    currMarker.addListener('mouseout', function(){
-                        addressoWindow.close();
                     });
                 });
             }
@@ -427,11 +464,11 @@
         <!-- The script below has the unnecassary "&libraries=places" url-parameter that isn't needed if we aren't using
              the places library &libraries=places -->
         <!--
-
+            https://console.cloud.google.com/apis/credentials
         UNRESTRICTED KEY =  AIzaSyBuin5MR4aGj-5bNB13zpdxw1cVxxp5jFU
          restricted key = AIzaSyB2s2_GxHsxcXd9tXdd_owJvwEhpfxNNiU
 
         -->
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuin5MR4aGj-5bNB13zpdxw1cVxxp5jFU&callback=initMap" async defer></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2s2_GxHsxcXd9tXdd_owJvwEhpfxNNiU&callback=initMap&libraries=places" async defer></script>
     </body>
 </html>
