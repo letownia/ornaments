@@ -4,6 +4,7 @@ import java.util.Locale;
 
 public enum SupportedLocale {
     pl("pl", "Polski"),
+    es("es", "Español"),
     en("en", "English");
 
     public static final SupportedLocale defaultLocale = en;
