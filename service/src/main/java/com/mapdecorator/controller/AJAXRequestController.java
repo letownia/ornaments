@@ -2,10 +2,12 @@ package com.mapdecorator.controller;
 
 import com.google.gson.GsonBuilder;
 import com.mapdecorator.images.ImageStorageService;
+import com.mapdecorator.images.util.ImageScalingUtils;
 import com.mapdecorator.repository.db.MapFeature;
 import com.mapdecorator.repository.db.MapFeaturePhoto;
 import com.mapdecorator.service.MapDecoratorService;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +28,7 @@ import org.springframework.web.servlet.HandlerMapping;
 @RestController
 public class AJAXRequestController {
 
-  private static final Logger logger = LoggerFactory.getLogger(AJAXRequestController.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final MapDecoratorService mapDecoratorService;
   private final ImageStorageService imageStorageService;
 
@@ -58,29 +60,33 @@ public class AJAXRequestController {
    * Get's all the features as a single JSON object named allFeatures.
    * The JSON will be a list of MapFeature with only the properties that are tagged with @Expose annotation.
    */
-  @RequestMapping(method = RequestMethod.GET, value = "/allFeatures")
+  @RequestMapping(method = RequestMethod.GET, value = "/allFeatures", produces = "application/text;charset=UTF-8")
   public String getFeaturesJSONObject() {
     return "var allFeatures = " + toJSONStringOnlyExposedFields(mapDecoratorService.getAllFeatures()) + ";";
   }
 
-  @PostMapping("/feature")
+  @PostMapping(value = "/feature", produces = "application/json;charset=UTF-8")
   public ResponseEntity<String> insertFeature(@RequestParam String category, @RequestParam String name,
       @RequestParam String description, @RequestParam String googlePlaceId, @RequestParam String latitude,
       @RequestParam String longitude, @RequestParam String imageDataURL) {
 
     long startTime, startTotal;
     startTotal = System.nanoTime();
+
+    String mediumPhotoIdentifier;
+    String thumbnailIdentifier;
+
     try {
       startTime = System.nanoTime();
-      byte[] photoBytes = ImageStorageService.imagaDataURLtoBinary(imageDataURL);
+      byte[] photoBytes = ImageScalingUtils.imagaDataURLtoBinary(imageDataURL);
       logTimeDifference("imagaDataURLtoBinary", startTime, System.nanoTime());
 
       startTime = System.nanoTime();
-      imageStorageService.saveMedium(googlePlaceId, photoBytes);
+      mediumPhotoIdentifier = imageStorageService.saveMedium(googlePlaceId, photoBytes);
       logTimeDifference("saveMedium ", startTime, System.nanoTime());
 
       startTime = System.nanoTime();
-      imageStorageService.createAndSaveThumbnail(googlePlaceId, photoBytes);
+      thumbnailIdentifier = imageStorageService.createAndSaveThumbnail(googlePlaceId, photoBytes);
       logTimeDifference("createAndSaveThumbnail ", startTime, System.nanoTime());
     } catch (IOException e) {
       e.printStackTrace();
@@ -97,8 +103,8 @@ public class AJAXRequestController {
       newFeature.setLatitude(new BigDecimal(latitude));
       newFeature.setLongitude(new BigDecimal(longitude));
       MapFeaturePhoto newPhoto = new MapFeaturePhoto();
-      newPhoto.setMediumPhotoIdentifier(googlePlaceId);
-      newPhoto.setThumbnailIdentifier(googlePlaceId);
+      newPhoto.setMediumPhotoIdentifier(mediumPhotoIdentifier);
+      newPhoto.setThumbnailIdentifier(thumbnailIdentifier);
       newPhoto.setMapFeature(newFeature);
       newFeature.getPhotoList().add(newPhoto);
       mapDecoratorService.insertMapFeature(newFeature, newPhoto);

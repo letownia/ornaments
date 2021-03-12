@@ -1,0 +1,7 @@
+FROM amazon/aws-lambda-java:11.2021.02.25.10
+#RUN apt-get update && apt-get install vim
+COPY service/target/service-final.jar /ornaments/service-final.jar
+ENV JAVA_OPTS ""
+#CMD java $JAVA_OPTS -jar ./service.jar
+ENTRYPOINT exec java $JAVA_OPTS -jar /ornaments/service-final.jar
+#ENTRYPOINT ["java","$JAVA_OPTS","-jar","/ornaments/service-final.jar"]

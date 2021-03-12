@@ -3,15 +3,19 @@ package com.mapdecorator.service;
 import com.mapdecorator.repository.db.MapFeature;
 import com.mapdecorator.repository.db.MapFeaturePhoto;
 import com.mapdecorator.repository.MapFeatureRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class MapDecoratorService {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final MapFeatureRepository mapFeatureRepository;
 

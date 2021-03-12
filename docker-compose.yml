@@ -3,6 +3,11 @@ volumes:
   map-decorator-db2:
   mapdecorator-photos:
 
+# map-decorator-1.creazehjbnoq.eu-central-1.rds.amazonaws.com
+#AWS DB instance identifierInfo : map-decorator-1
+# user : admin
+# pass : k3cekmwqEtjA9eKS
+
 services:
 #  redis:
 #    container_name: redis
@@ -26,19 +31,18 @@ services:
       - "3306:3306"
   service:
     #build: .
-    image: ornaments:12_02_2021
+    image: map-decorator-aws:v1
 #    entrypoint: tail -f /dev/null
-    depends_on:
-      - map_decorator_db
+#    depends_on:
+#      - map_decorator_db
     volumes:
       - ./service/target:/ornaments
       - mapdecorator-photos:/photos
-    container_name: ornafuck
+    container_name: map-decorator-application
     #env_file: plugin.env
    # entrypoint: tail -F anything
-    environment:
-      - DATA_PATH=/plugin_path
-#      - ENVIRONMENT=dev
+    env_file:
+      - conf.env
     ports:
      - "6970:8080"
 networks:

@@ -173,7 +173,7 @@
             </div>
 
         </div>
-        <script>
+        <script th:inline="javascript">
             var app = angular.module("myApp", []);
             app.controller("myCtrl", function ($scope) {
                 $scope.allCategories = allCategories;
@@ -195,9 +195,9 @@
             /* var bucketName = '[[${@environment.getProperty("com.lojasiewicz.mapDecorator.bucketName")}]]';
              var baseURLForImages = 'https://storage.googleapis.com/' + bucketName + '/'; */
             // var baseURLForImages = 'http://localhost:8080/images/';
-            var baseURLForMediumPhotos= 'http://localhost:6970/images/medium/';
-            var baseURLForThumbnails= 'http://localhost:6970/images/thumbnails/';
-            var noPlaceSelected= "[[#{addressError}]]";
+            var baseImagesURL=  /*[[${baseImagesURL}]]*/'http://localhost:6970/images';
+            console.log("Running w/ baseImagesURL " + baseImagesURL);
+            var noPlaceSelected= /*[[#{addressError}]]*/'';
             var currCategory ;
             setCustomValidationMessages();
 
@@ -330,6 +330,7 @@
                 allFeatures.forEach(addFeature);
             }
             function addFeature(feature){
+                console.log(feature);
                 var categoryImage = {
                     url: '/' + feature.category + ".svg",
                     // This marker is 20 pixels wide by 32 pixels high.
@@ -350,11 +351,11 @@
 
                 var contentString = '<div id="content infoBitch">'
                                     + '<p>' + feature.name + '</p>'
-                                    + '<img src ="' + baseURLForThumbnails + feature.photoList[0].thumbnailIdentifier + ".jpg"
+                                    + '<img src ="' + baseImagesURL + feature.photoList[0].thumbnailIdentifier
                                     + '" max-width = "100%" max-height="100%"/>'
                                     + '</div>';
                 /*Test if mediumPhotoIdentifier is actually valid ?? */
-                newMarker.mediumImageURL = baseURLForMediumPhotos + feature.photoList[0].mediumPhotoIdentifier + ".jpg";
+                newMarker.mediumImageURL = baseImagesURL + feature.photoList[0].mediumPhotoIdentifier;
                 newMarker.featureName = feature.name;
                 newMarker.featureDescription = feature.description;
                 var infoWindow = new google.maps.InfoWindow({
@@ -411,10 +412,11 @@
 
             }
             function updateSelectedAddress(placesResult){
+
+                const isValidForMap = (x) => (x === "street_address" || x === "premise");
+
                 console.log("Updating with placesResult " + placesResult);
-                var filteredResults = placesResult.filter(function (x) {
-                    return x.types[0] === "street_address"
-                });
+                var filteredResults = placesResult.filter( x => x.types.some(isValidForMap));
                 if (filteredResults.length > 0) {
                     var chosenResult = filteredResults[0];
                     $('[name="googlePlaceId"]').get(0).value = chosenResult.place_id;
@@ -423,6 +425,8 @@
                     $('label.address').text(chosenResult.formatted_address);
                     addressoWindow.setContent(chosenResult.formatted_address);
                 } else {
+                    console.log("Failed to find premise or street_address but found instead : ");
+                    placesResult.forEach( x=> console.log("type is " + x.types[0]));
                     $('[name="googlePlaceId"]').get(0).value = null;
                     $('[name="latitude"]').get(0).value = null;
                     $('[name="longitude"]').get(0).value = null;

@@ -7,70 +7,61 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import javax.imageio.ImageIO;
+
+import com.mapdecorator.images.util.ImageScalingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile("dev")
 public class FileSystemImageStorageService implements ImageStorageService {
 
-  private static final Logger logger = LoggerFactory.getLogger(FileSystemImageStorageService.class);
-
-  public static final int THUMBNAIL_MAX_WIDTH = 160;
-  public static final int THUMBNAIL_MAX_HEIGHT = 120;
-
-  private static final String THUMBNAIL_FOLDER = "thumbnails";
-  private static final String MEDIUM_FOLDER = "medium";
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final String saveDirectory;
   private final String mediumPhotoDirectory;
   private final String thumbnailDirectory;
 
-
-  static final String FILE_TYPE = "jpg";
-
   public FileSystemImageStorageService(@Value("${mapdecorator.images.save-directory}") String saveDirectory) {
     Objects.requireNonNull(saveDirectory);
+
     logger.info("Starting FileSystemImageStorageService w/ directory :" + saveDirectory);
     this.saveDirectory = saveDirectory;
-    mediumPhotoDirectory = saveDirectory + "/" + MEDIUM_FOLDER;
-    thumbnailDirectory =  saveDirectory + "/" + THUMBNAIL_FOLDER;
+    mediumPhotoDirectory = saveDirectory + "/" + "medium";
+    thumbnailDirectory =  saveDirectory + "/" + "thumbnail";
   }
 
   @Override
-  public String saveMedium(String imageIdentifier, byte[] imageData) {
+  public String saveMedium(String imageIdentifier, byte[] imageData) throws IOException{
+    logger.info("saveMedium " + imageIdentifier);
     Objects.requireNonNull(imageIdentifier);
     Objects.requireNonNull(imageData);
-    String pathWithFilename = pathWithFilename(mediumPhotoDirectory, imageIdentifier);
+    String pathWithFilename = ImageStorageService.pathWithFilename(mediumPhotoDirectory, imageIdentifier);
     savePhotoToDisk(pathWithFilename, imageData);
-    return MEDIUM_FOLDER + "/" + imageIdentifier;
+    return pathWithFilename;
   }
 
   @Override
   public String createAndSaveThumbnail(String imageIdentifier, byte[] imageData) throws IOException {
+    logger.info("createAndSaveThumbnail " + imageIdentifier);
     Objects.requireNonNull(imageIdentifier);
     Objects.requireNonNull(imageData);
+    String pathWithFileName = ImageStorageService.pathWithFilename (thumbnailDirectory, imageIdentifier);
 
-    BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(imageData));
+    byte[] rescaledImageBytes = ImageScalingUtils.rescaleImage(imageData, THUMBNAIL_MAX_WIDTH, THUMBNAIL_MAX_HEIGHT, FILE_TYPE);
 
-    BufferedImage rescaledImage = rescaleImage(inputImage, THUMBNAIL_MAX_WIDTH, THUMBNAIL_MAX_HEIGHT);
-
-    /*Writing new image to byteStream */
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ImageIO.write(rescaledImage, FILE_TYPE, baos);
-    baos.flush();
-    byte[] imageInByte = baos.toByteArray();
-    baos.close();
-
-    String pathWithFileName = pathWithFilename (thumbnailDirectory, imageIdentifier);
-    savePhotoToDisk(pathWithFileName, imageInByte);
-    return THUMBNAIL_FOLDER + "/" + imageIdentifier;
+    savePhotoToDisk(pathWithFileName, rescaledImageBytes);
+    return pathWithFileName;
   }
 
   @Override
@@ -88,40 +79,11 @@ public class FileSystemImageStorageService implements ImageStorageService {
   }
 
 
-  private void savePhotoToDisk(String pathWithFilename, byte[] imageData) {
+  private void savePhotoToDisk(String pathWithFilename, byte[] imageData) throws IOException {
     try (FileOutputStream fos = new FileOutputStream(pathWithFilename)) {
       fos.write(imageData);
-    } catch (Exception e) {
-      logger.error("Exception during saveFile :" + e.getMessage());
     }
   }
 
-  static String pathWithFilename(String directory, String identifier){
-    return directory + "/" + identifier + "." + FILE_TYPE;
-  }
 
-  static BufferedImage rescaleImage(BufferedImage inputImage, int maxWidth, int maxHeight) {
-
-    int currWidth = inputImage.getWidth();
-    int currHeight = inputImage.getHeight();
-
-    if (currWidth > maxWidth) {
-      currHeight *= (0.0 + maxWidth) / currWidth;
-      currWidth = maxWidth;
-    }
-    if (currHeight > maxHeight) {
-      currWidth *= (0.0 + maxHeight) / currHeight;
-      currHeight = maxWidth;
-    }
-
-    Image temp = inputImage.getScaledInstance(currWidth, currHeight, Image.SCALE_SMOOTH);
-    int type = inputImage.getTransparency() == Transparency.OPAQUE ?
-        BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-
-    BufferedImage newImage = new BufferedImage(currWidth, currHeight, type);
-    Graphics2D g2d = newImage.createGraphics();
-    g2d.drawImage(temp, 0, 0, null);
-    g2d.dispose();
-    return newImage;
-  }
 }

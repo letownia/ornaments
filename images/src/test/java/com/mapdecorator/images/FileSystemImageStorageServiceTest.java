@@ -32,12 +32,12 @@ public class FileSystemImageStorageServiceTest {
   }
 
   private static File getTestFile() {
-    return new File(FileSystemImageStorageService.pathWithFilename(imageDirectory, TEST_FILE_IDENTIFIER));
+    return new File(ImageStorageService.pathWithFilename(imageDirectory, TEST_FILE_IDENTIFIER));
   }
 
   @Ignore //doesn't work from command line "mvn clean install" (probably /target directory is deleted/non-existent ? )
   @Test
-  public void saveMedium() {
+  public void saveMedium() throws IOException {
     String relativeFilePath = imageStorageService.saveMedium(TEST_FILE_IDENTIFIER, SMALL_IMAGE_BYTE_ARRAY);
     assert (getTestFile().toString().contains(relativeFilePath));
     assert (getTestFile().exists());

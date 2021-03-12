@@ -26,7 +26,9 @@
       <version>2.2.6.RELEASE</version>
   </parent>
 
+
   <properties>
+    <aws.java.sdk.version>2.16.17</aws.java.sdk.version>
     <java.version>11</java.version>
 <!--    <maven.compiler.source>${java.version}</maven.compiler.source> &lt;!&ndash; REQUIRED &ndash;&gt;-->
 <!--    <maven.compiler.target>${java.version}</maven.compiler.target>-->
